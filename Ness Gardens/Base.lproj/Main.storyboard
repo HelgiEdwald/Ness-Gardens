@@ -40,6 +40,9 @@
                                 <rect key="frame" x="16" y="118" width="361" height="299"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <standardMapConfiguration key="preferredConfiguration"/>
+                                <connections>
+                                    <outlet property="delegate" destination="BYZ-38-t0r" id="BCM-eP-Y29"/>
+                                </connections>
                             </mapView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
