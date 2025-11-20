@@ -8,6 +8,32 @@
 import UIKit
 import MapKit
 
+nonisolated
+struct plantRecords : Decodable {
+    let plants: [Plant]
+}
+
+//MARK: Create decodable structure matching JSON data
+nonisolated
+struct Plant : Decodable {
+    let recnum : String
+    let acid : String?
+    let accsta : String?
+    let family: String?
+    let genus : String?
+    let species : String?
+    let infraspecificEpithet : String?
+    let vernacularName: String?
+    let cultivarName : String?
+    let donor : String?
+    let latitude, longitude: String?
+    let country, iso, sgu, loc: String?
+    let alt, cnam, cid, cdat: String?
+    let bed, memoriam: String?
+    let redlist: String?
+    let last_modified: String
+}
+
 class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, MKMapViewDelegate, CLLocationManagerDelegate {
     
     
@@ -19,6 +45,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     var locationManager = CLLocationManager()
     var firstRun = true
     var startTrackingTheUser = false
+    
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         let locationOfUser = locations[0] //this method returns an array of locations
@@ -105,6 +132,38 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         //configure the map to show the user's location (with a blue dot).
         myMap.showsUserLocation = true
+        
+        //set up the URL
+        if let url = URL(string: "https://cgi.csc.liv.ac.uk/~phil/Teaching/COMP228/ness/data.php?class=plants") {
+            
+            //create a URL session running on a background thread
+            let session = URLSession.shared
+            
+            //create a data task supplied with the URL returning a tuple of the data we want, a response code from the data server, and any error message
+            session.dataTask(with: url) { (data, response, err) in
+                //try to get at data
+                guard let jsonData = data else {
+                    return
+                }
+                //decode data if accessed ok
+                do {
+                    let decoder = JSONDecoder()
+                    let plantData = try decoder.decode(plantRecords.self, from: jsonData)
+                    var count = 0
+                    for aPlant in plantData.plants {
+                        count += 1
+                        let theFamily = aPlant.family ?? "no family"
+                        let theSpecies = aPlant.species ?? "no species"
+                        print("\(count) + \(theFamily) + \(theSpecies)")
+                    }
+                
+                //catch error when data does not match structure
+                } catch let jsonErr {
+                    print("Error decoding JSON", jsonErr)
+                }
+            }.resume()
+            print("You are here!")
+        }
     }
 
 }
