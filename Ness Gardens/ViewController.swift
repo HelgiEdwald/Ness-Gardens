@@ -108,33 +108,10 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         return cell
     }
     
-    //MARK: View related stuff
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        // Do any additional setup after loading the view.
-       
-        // Make this view controller a delegate of the Location Manager, so that it
-        //is able to call functions provided in this view controller.
-        locationManager.delegate = self as CLLocationManagerDelegate
-        
-        //set the level of accuracy for the user's location.
-        locationManager.desiredAccuracy = kCLLocationAccuracyBestForNavigation
-        
-        //Ask the location manager to request authorisation from the user. Note that this
-        //only happens once if the user selects the "when in use" option. If the user
-        //denies access, then your app will not be provided with details of the user's
-        //location.
-        locationManager.requestWhenInUseAuthorization()
-        
-        //Once the user's location is being provided then ask for updates when the user
-        //moves around.
-        locationManager.startUpdatingLocation()
-        
-        //configure the map to show the user's location (with a blue dot).
-        myMap.showsUserLocation = true
+    func decodeDataFromURL(String: String) {
         
         //set up the URL
-        if let url = URL(string: "https://cgi.csc.liv.ac.uk/~phil/Teaching/COMP228/ness/data.php?class=plants") {
+        if let url = URL(string: String) {
             
             //create a URL session running on a background thread
             let session = URLSession.shared
@@ -164,6 +141,38 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             }.resume()
             print("You are here!")
         }
+        
     }
+    
+    //MARK: View related stuff
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        // Do any additional setup after loading the view.
+       
+        // Make this view controller a delegate of the Location Manager, so that it
+        //is able to call functions provided in this view controller.
+        locationManager.delegate = self as CLLocationManagerDelegate
+        
+        //set the level of accuracy for the user's location.
+        locationManager.desiredAccuracy = kCLLocationAccuracyBestForNavigation
+        
+        //Ask the location manager to request authorisation from the user. Note that this
+        //only happens once if the user selects the "when in use" option. If the user
+        //denies access, then your app will not be provided with details of the user's
+        //location.
+        locationManager.requestWhenInUseAuthorization()
+        
+        //Once the user's location is being provided then ask for updates when the user
+        //moves around.
+        locationManager.startUpdatingLocation()
+        
+        //configure the map to show the user's location (with a blue dot).
+        myMap.showsUserLocation = true
+        
+        let url = "https://cgi.csc.liv.ac.uk/~phil/Teaching/COMP228/ness/data.php?class=plants"
+        
+        decodeDataFromURL(String: url)
+        
 
+    }
 }
