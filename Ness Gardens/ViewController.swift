@@ -108,10 +108,10 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         return cell
     }
     
-    func decodeDataFromURL(String: String) {
+    func decodeDataFromURL(suppliedURL: String) {
         
         //set up the URL
-        if let url = URL(string: String) {
+        if let url = URL(string: suppliedURL) {
             
             //create a URL session running on a background thread
             let session = URLSession.shared
@@ -171,7 +171,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         let url = "https://cgi.csc.liv.ac.uk/~phil/Teaching/COMP228/ness/data.php?class=plants"
         
-        decodeDataFromURL(String: url)
+        decodeDataFromURL(suppliedURL: url)
         
 
     }
