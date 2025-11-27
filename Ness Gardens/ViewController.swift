@@ -76,11 +76,12 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "myCell", for: indexPath)
-        var content = UIListContentConfiguration.subtitleCell()
-        content.text = plantList?.plants[indexPath.row].recnum ?? "no recnum"
-        content.secondaryText = plantList?.plants[indexPath.row].family ?? "no family"
-        cell.contentConfiguration = content
+        let cell = tableView.dequeueReusableCell(withIdentifier: "myCell", for: indexPath) as! NessGardensTableViewCell
+        
+        cell.familyLabel.text = plantList?.plants[indexPath.row].family ?? "no family"
+        cell.speciesLabel.text = plantList?.plants[indexPath.row].species ?? "no species"
+        cell.thumbnailImageView.image = UIImage(named: "Basic plant")
+        
         return cell
     }
     
