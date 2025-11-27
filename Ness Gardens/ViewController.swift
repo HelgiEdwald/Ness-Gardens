@@ -101,8 +101,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         let plantRecnum = plantList?.plants[indexPath.row].recnum
         
         let imageFileType = imageList?.images.first(where: { $0.recnum == plantRecnum })?.img_file_name ?? ""
-        
-        cell.thumbnailImageView.image = UIImage(named: "Basic plant")
         cell.thumbnailImageView.image = imageDict[imageFileType]
         return cell
     }
@@ -133,10 +131,14 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                         let theName = aBed.name
                         print("\(count) + \(theBedID) + \(theName)")
                     }
-                    
-                    DispatchQueue.main.async {
-                        self.updateTheTable()
+                    self.bedsDecoded = true
+                    print("B",self.bedsDecoded)
+                    if self.bedsDecoded && self.plantsDecoded && self.imagesDecoded {
+                        DispatchQueue.main.async {
+                            self.updateTheTable()
+                        }
                     }
+                    
                     
                 //catch error when data does not match structure
                 } catch let jsonErr {
@@ -145,7 +147,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             }.resume()
             print("You are here!")
         }
-        bedsDecoded = true
         
     }
     
@@ -169,9 +170,12 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                     let decoder = JSONDecoder()
                     let plantData = try decoder.decode(plantRecords.self, from: jsonData)
                     self.plantList = plantData
-                    
-                    DispatchQueue.main.async {
-                        self.updateTheTable()
+                    self.plantsDecoded = true
+                    print("P",self.plantsDecoded)
+                    if self.bedsDecoded && self.plantsDecoded && self.imagesDecoded {
+                        DispatchQueue.main.async {
+                            self.updateTheTable()
+                        }
                     }
                     
                 //catch error when data does not match structure
@@ -181,7 +185,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             }.resume()
             print("You are here!")
         }
-        plantsDecoded = true
+        
         
     }
     
@@ -204,6 +208,50 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                     let imageData = try decoder.decode(imageRecords.self, from: jsonData)
                     self.imageList = imageData
                     
+                    if let list = self.imageList {
+                        for image in list.images {
+                            self.retrieveImageData(imageFileName: image.img_file_name)
+                        }
+                    }
+                    self.imagesDecoded = true
+                    print("I",self.imagesDecoded)
+                    if self.bedsDecoded && self.plantsDecoded && self.imagesDecoded {
+                        DispatchQueue.main.async {
+                            self.updateTheTable()
+                        }
+                    }
+                    
+                //catch error when data does not match structure
+                } catch let jsonErr {
+                    print("Error decoding JSON", jsonErr)
+                }
+            }.resume()
+            print("You are here!")
+        }
+    }
+    
+
+    
+    
+    func retrieveImageData(imageFileName: String){
+        //set up the URL
+        if let url = URL(string: "https://cgi.csc.liv.ac.uk/~phil/Teaching/COMP228/ness_thumbnails/\(imageFileName)") {
+            
+            //create a URL session running on a background thread
+            let session = URLSession.shared
+            
+            //create a data task supplied with the URL returning a tuple of the data we want, a response code from the data server, and any error message
+            session.dataTask(with: url) { (data, response, err) in
+                //try to get at data
+                guard let imageData = data else {
+                    return
+                }
+                
+                //decode data if accessed ok
+                do {
+                    let imageRetrieved = UIImage(data: imageData)
+                    self.imageDict[imageFileName] = imageRetrieved
+                    
                     DispatchQueue.main.async {
                         self.updateTheTable()
                     }
@@ -215,43 +263,13 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             }.resume()
             print("You are here!")
         }
-        imagesDecoded = true
-    }
-    
-
-    
-    
-    func retrieveImageData(imageFileName: String){
-        //set up the URL
-        if let url = URL(string: "https://cgi.csc.liv.ac.uk/~phil/Teaching/COMP228/ness_images/\(imageFileName)") {
-            
-            //create a URL session running on a background thread
-            let session = URLSession.shared
-            
-            //create a data task supplied with the URL returning a tuple of the data we want, a response code from the data server, and any error message
-            session.dataTask(with: url) { (data, response, err) in
-                //try to get at data
-                guard let imageData = data else {
-                    return
-                }
-                //decode data if accessed ok
-                do {
-                    let imageRetrieved = UIImage(data: imageData)
-                    self.imageDict[imageFileName] = imageRetrieved
-                    
-                //catch error when data does not match structure
-                } catch let jsonErr {
-                    print("Error decoding JSON", jsonErr)
-                }
-            }.resume()
-            print("You are here!")
-        }
     }
     
     func updateTheTable() {
-        if imagesDecoded && plantsDecoded == true {
+        if imagesDecoded {
             myTable.reloadData()
         }
+        
     }
     
     //MARK: View related stuff
@@ -279,17 +297,12 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         //configure the map to show the user's location (with a blue dot).
         myMap.showsUserLocation = true
         
+        decodeBedData()
+        
         decodePlantData()
         
         decodeImageData()
         
-        decodeBedData()
-        
-        if let list = imageList {
-            for image in list.images {
-                retrieveImageData(imageFileName: image.img_file_name)
-            }
-        }
         
     }
 }
