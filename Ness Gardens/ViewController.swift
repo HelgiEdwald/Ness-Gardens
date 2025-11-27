@@ -8,31 +8,7 @@
 import UIKit
 import MapKit
 
-nonisolated
-struct plantRecords : Decodable {
-    let plants: [Plant]
-}
 
-//MARK: Create decodable structure matching JSON data
-nonisolated
-struct Plant : Decodable {
-    let recnum : String
-    let acid : String?
-    let accsta : String?
-    let family: String?
-    let genus : String?
-    let species : String?
-    let infraspecificEpithet : String?
-    let vernacularName: String?
-    let cultivarName : String?
-    let donor : String?
-    let latitude, longitude: String?
-    let country, iso, sgu, loc: String?
-    let alt, cnam, cid, cdat: String?
-    let bed, memoriam: String?
-    let redlist: String?
-    let last_modified: String
-}
 
 class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, MKMapViewDelegate, CLLocationManagerDelegate {
     
@@ -45,7 +21,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     var locationManager = CLLocationManager()
     var firstRun = true
     var startTrackingTheUser = false
-    
+    var plantList:plantRecords? = nil
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         let locationOfUser = locations[0] //this method returns an array of locations
@@ -96,14 +72,14 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 10
+        return plantList?.plants.count ?? 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "myCell", for: indexPath)
         var content = UIListContentConfiguration.subtitleCell()
-        content.text = "testing"
-        content.secondaryText = "more testing"
+        content.text = plantList?.plants[indexPath.row].recnum ?? "no recnum"
+        content.secondaryText = plantList?.plants[indexPath.row].family ?? "no family"
         cell.contentConfiguration = content
         return cell
     }
@@ -126,6 +102,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 do {
                     let decoder = JSONDecoder()
                     let plantData = try decoder.decode(plantRecords.self, from: jsonData)
+                    self.plantList = plantData
                     var count = 0
                     for aPlant in plantData.plants {
                         count += 1
@@ -133,7 +110,11 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                         let theSpecies = aPlant.species ?? "no species"
                         print("\(count) + \(theFamily) + \(theSpecies)")
                     }
-                
+                    
+                    DispatchQueue.main.async {
+                        self.updateTheTable()
+                    }
+                    
                 //catch error when data does not match structure
                 } catch let jsonErr {
                     print("Error decoding JSON", jsonErr)
@@ -142,6 +123,10 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             print("You are here!")
         }
         
+    }
+    
+    func updateTheTable() {
+        myTable.reloadData()
     }
     
     //MARK: View related stuff
