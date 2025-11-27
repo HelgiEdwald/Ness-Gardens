@@ -32,3 +32,19 @@ struct Plant : Decodable {
     let redlist: String?
     let last_modified: String
 }
+
+nonisolated
+struct imageRecords: Decodable {
+    let images: [Image]
+}
+
+nonisolated
+struct Image: Decodable {
+    let recnum: String
+    let imgid: String?
+    let img_file_name: String
+    let imgtitle: String?
+    let photodt: String?
+    let copy: String?
+    let last_modified: String
+}

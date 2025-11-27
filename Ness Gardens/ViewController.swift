@@ -22,7 +22,16 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     var firstRun = true
     var startTrackingTheUser = false
     var plantList:plantRecords? = nil
+    var imageList:imageRecords? = nil
+    var plantsDecoded = false
+    var imagesDecoded = false
     
+    
+    
+    var imageDict:[String:UIImage] = [:]
+    
+    
+    //MARK: Map and Location related stuff
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         let locationOfUser = locations[0] //this method returns an array of locations
         
@@ -71,6 +80,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         startTrackingTheUser = true
     }
     
+    //MARK: Table related stuff
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return plantList?.plants.count ?? 0
     }
@@ -80,11 +90,18 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         cell.familyLabel.text = plantList?.plants[indexPath.row].family ?? "no family"
         cell.speciesLabel.text = plantList?.plants[indexPath.row].species ?? "no species"
-        cell.thumbnailImageView.image = UIImage(named: "Basic plant")
         
+        let plantRecnum = plantList?.plants[indexPath.row].recnum
+        
+        let imageFileType = imageList?.images.first(where: { $0.recnum == plantRecnum })?.img_file_name ?? ""
+        
+        cell.thumbnailImageView.image = UIImage(named: "Basic plant")
+        cell.thumbnailImageView.image = imageDict[imageFileType]
         return cell
     }
     
+    
+    //TODO: combine these two functions into one
     func decodeDataFromURL(suppliedURL: String) {
         
         //set up the URL
@@ -104,13 +121,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                     let decoder = JSONDecoder()
                     let plantData = try decoder.decode(plantRecords.self, from: jsonData)
                     self.plantList = plantData
-                    var count = 0
-                    for aPlant in plantData.plants {
-                        count += 1
-                        let theFamily = aPlant.family ?? "no family"
-                        let theSpecies = aPlant.species ?? "no species"
-                        print("\(count) + \(theFamily) + \(theSpecies)")
-                    }
                     
                     DispatchQueue.main.async {
                         self.updateTheTable()
@@ -123,11 +133,77 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             }.resume()
             print("You are here!")
         }
+        plantsDecoded = true
         
     }
     
+    func decodeImageDataFromURL(suppliedURL: String) {
+        //set up the URL
+        if let url = URL(string: suppliedURL) {
+            
+            //create a URL session running on a background thread
+            let session = URLSession.shared
+            
+            //create a data task supplied with the URL returning a tuple of the data we want, a response code from the data server, and any error message
+            session.dataTask(with: url) { (data, response, err) in
+                //try to get at data
+                guard let jsonData = data else {
+                    return
+                }
+                //decode data if accessed ok
+                do {
+                    let decoder = JSONDecoder()
+                    let imageData = try decoder.decode(imageRecords.self, from: jsonData)
+                    self.imageList = imageData
+                    
+                    DispatchQueue.main.async {
+                        self.updateTheTable()
+                    }
+                    
+                //catch error when data does not match structure
+                } catch let jsonErr {
+                    print("Error decoding JSON", jsonErr)
+                }
+            }.resume()
+            print("You are here!")
+        }
+        imagesDecoded = true
+    }
+    
+
+    
+    
+    func retrieveImageData(imageFileName: String){
+        //set up the URL
+        if let url = URL(string: "https://cgi.csc.liv.ac.uk/~phil/Teaching/COMP228/ness_images/\(imageFileName)") {
+            
+            //create a URL session running on a background thread
+            let session = URLSession.shared
+            
+            //create a data task supplied with the URL returning a tuple of the data we want, a response code from the data server, and any error message
+            session.dataTask(with: url) { (data, response, err) in
+                //try to get at data
+                guard let imageData = data else {
+                    return
+                }
+                //decode data if accessed ok
+                do {
+                    let imageRetrieved = UIImage(data: imageData)
+                    self.imageDict[imageFileName] = imageRetrieved
+                    
+                //catch error when data does not match structure
+                } catch let jsonErr {
+                    print("Error decoding JSON", jsonErr)
+                }
+            }.resume()
+            print("You are here!")
+        }
+    }
+    
     func updateTheTable() {
-        myTable.reloadData()
+        if imagesDecoded && plantsDecoded == true {
+            myTable.reloadData()
+        }
     }
     
     //MARK: View related stuff
@@ -155,10 +231,19 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         //configure the map to show the user's location (with a blue dot).
         myMap.showsUserLocation = true
         
-        let url = "https://cgi.csc.liv.ac.uk/~phil/Teaching/COMP228/ness/data.php?class=plants"
+        let plantsURL = "https://cgi.csc.liv.ac.uk/~phil/Teaching/COMP228/ness/data.php?class=plants"
         
-        decodeDataFromURL(suppliedURL: url)
+        let imagesURL = "https://cgi.csc.liv.ac.uk/~phil/Teaching/COMP228/ness/data.php?class=images"
         
-
+        decodeDataFromURL(suppliedURL: plantsURL)
+        
+        decodeImageDataFromURL(suppliedURL: imagesURL)
+        
+        if let list = imageList {
+            for image in list.images {
+                retrieveImageData(imageFileName: image.img_file_name)
+            }
+        }
+        
     }
 }
