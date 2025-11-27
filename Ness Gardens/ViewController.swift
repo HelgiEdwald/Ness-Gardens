@@ -36,8 +36,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         if firstRun {
             firstRun = false
         
-            let latDelta: CLLocationDegrees = 0.0025
-            let lonDelta: CLLocationDegrees = 0.0025
+            let latDelta: CLLocationDegrees = 0.0010
+            let lonDelta: CLLocationDegrees = 0.0010
             
             //a span defines how large an area is depicted on the map.
             let span = MKCoordinateSpan(latitudeDelta: latDelta, longitudeDelta: lonDelta)
