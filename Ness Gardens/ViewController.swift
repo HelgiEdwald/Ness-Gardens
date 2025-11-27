@@ -23,6 +23,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     var startTrackingTheUser = false
     var plantList:plantRecords? = nil
     var imageList:imageRecords? = nil
+    var bedList:bedRecords? = nil
+    var bedsDecoded = false
     var plantsDecoded = false
     var imagesDecoded = false
     
@@ -85,6 +87,11 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         return plantList?.plants.count ?? 0
     }
     
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return bedList?.beds.count ?? 0
+    }
+    
+    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "myCell", for: indexPath) as! NessGardensTableViewCell
         
@@ -100,12 +107,53 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         return cell
     }
     
-    
-    //TODO: combine these two functions into one
-    func decodeDataFromURL(suppliedURL: String) {
+    func decodeBedData() {
         
         //set up the URL
-        if let url = URL(string: suppliedURL) {
+        if let url = URL(string: "https://cgi.csc.liv.ac.uk/~phil/Teaching/COMP228/ness/data.php?class=beds") {
+            
+            //create a URL session running on a background thread
+            let session = URLSession.shared
+            
+            //create a data task supplied with the URL returning a tuple of the data we want, a response code from the data server, and any error message
+            session.dataTask(with: url) { (data, response, err) in
+                //try to get at data
+                guard let jsonData = data else {
+                    return
+                }
+                //decode data if accessed ok
+                do {
+                    let decoder = JSONDecoder()
+                    let bedData = try decoder.decode(bedRecords.self, from: jsonData)
+                    self.bedList = bedData
+                    var count = 0
+                    for aBed in bedData.beds {
+                        count += 1
+                        let theBedID = aBed.bed_id
+                        let theName = aBed.name
+                        print("\(count) + \(theBedID) + \(theName)")
+                    }
+                    
+                    DispatchQueue.main.async {
+                        self.updateTheTable()
+                    }
+                    
+                //catch error when data does not match structure
+                } catch let jsonErr {
+                    print("Error decoding JSON", jsonErr)
+                }
+            }.resume()
+            print("You are here!")
+        }
+        bedsDecoded = true
+        
+    }
+    
+    //TODO: combine these two functions into one
+    func decodePlantData() {
+        
+        //set up the URL
+        if let url = URL(string: "https://cgi.csc.liv.ac.uk/~phil/Teaching/COMP228/ness/data.php?class=plants") {
             
             //create a URL session running on a background thread
             let session = URLSession.shared
@@ -137,9 +185,9 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
     }
     
-    func decodeImageDataFromURL(suppliedURL: String) {
+    func decodeImageData() {
         //set up the URL
-        if let url = URL(string: suppliedURL) {
+        if let url = URL(string: "https://cgi.csc.liv.ac.uk/~phil/Teaching/COMP228/ness/data.php?class=images") {
             
             //create a URL session running on a background thread
             let session = URLSession.shared
@@ -231,13 +279,11 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         //configure the map to show the user's location (with a blue dot).
         myMap.showsUserLocation = true
         
-        let plantsURL = "https://cgi.csc.liv.ac.uk/~phil/Teaching/COMP228/ness/data.php?class=plants"
+        decodePlantData()
         
-        let imagesURL = "https://cgi.csc.liv.ac.uk/~phil/Teaching/COMP228/ness/data.php?class=images"
+        decodeImageData()
         
-        decodeDataFromURL(suppliedURL: plantsURL)
-        
-        decodeImageDataFromURL(suppliedURL: imagesURL)
+        decodeBedData()
         
         if let list = imageList {
             for image in list.images {

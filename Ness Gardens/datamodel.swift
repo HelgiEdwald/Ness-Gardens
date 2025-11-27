@@ -48,3 +48,17 @@ struct Image: Decodable {
     let copy: String?
     let last_modified: String
 }
+
+nonisolated
+struct bedRecords: Decodable {
+    let beds: [Bed]
+}
+
+
+nonisolated
+struct Bed: Decodable {
+    let bed_id: String
+    let name: String
+    let latitude, longitude: String
+    let last_modified: String
+}
