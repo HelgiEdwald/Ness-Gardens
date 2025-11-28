@@ -149,7 +149,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                     let decoder = JSONDecoder()
                     let bedData = try decoder.decode(bedRecords.self, from: jsonData)
                     self.bedList = bedData
-                    var count = 0
 
                     self.bedsDecoded = true
                     print("B",self.bedsDecoded, "P", self.plantsDecoded, "I", self.imagesDecoded)
@@ -316,9 +315,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                         self.updateTheTable()
                     }
                     
-                //catch error when data does not match structure
-                } catch let jsonErr {
-                    print("Error decoding JSON", jsonErr)
                 }
             }.resume()
             print("You are here!")
