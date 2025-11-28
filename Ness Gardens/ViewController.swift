@@ -29,7 +29,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     var imagesDecoded = false
     
     
-    
+    var plantDict:[String:String] = [:]
     var imageDict:[String:UIImage] = [:]
     
     
@@ -91,6 +91,18 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         return bedList?.beds.count ?? 0
     }
     
+    // Create a standard header that includes the returned text.
+    func tableView(_ tableView: UITableView, titleForHeaderInSection
+                                section: Int) -> String? {
+        return "Bed Name: \(bedList?.beds[section].name ?? "no name")"
+    }
+    
+    // Create a standard footer that includes the returned text.
+    func tableView(_ tableView: UITableView, titleForFooterInSection
+                                section: Int) -> String? {
+       return "Bed Name: \(bedList?.beds[section].name ?? "no name")"
+    }
+
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "myCell", for: indexPath) as! NessGardensTableViewCell
@@ -175,6 +187,14 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                     if self.bedsDecoded && self.plantsDecoded && self.imagesDecoded {
                         DispatchQueue.main.async {
                             self.updateTheTable()
+                            if let list = self.plantList {
+                                for plant in list.plants {
+                                    self.plantDict[plant.bed ?? "no bed"] = plant.recnum
+                                }
+                                print("Printing dictionary:")
+                                print(self.plantDict)
+                            }
+                            
                         }
                     }
                     
