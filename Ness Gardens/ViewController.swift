@@ -22,11 +22,14 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     var firstRun = true
     var startTrackingTheUser = false
     var plantList:plantRecords? = nil
+    var allPlants: [Plant] = []
+    var alivePlants: [Plant] = []
     var imageList:imageRecords? = nil
     var bedList:bedRecords? = nil
+    var bedArray: [Bed] = []
     var bedsDecoded = false
     var plantsDecoded = false
-    var imagesDecoded = false
+    var imagesDecoded = true
     
     
     var plantDict:[String:String] = [:]
@@ -112,8 +115,12 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         let plantRecnum = plantList?.plants[indexPath.row].recnum
         
-        let imageFileType = imageList?.images.first(where: { $0.recnum == plantRecnum })?.img_file_name ?? ""
-        cell.thumbnailImageView.image = imageDict[imageFileType]
+        let imageFileName = imageList?.images.first(where: { $0.recnum == plantRecnum })?.img_file_name ?? ""
+        
+        let urlString = "https://cgi.csc.liv.ac.uk/~phil/Teaching/COMP228/ness_thumbnails/\(imageFileName)"
+        let url = URL(string: urlString)!
+        
+        cell.thumbnailImageView.load(url:url)
         return cell
     }
     
@@ -138,17 +145,30 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                     let bedData = try decoder.decode(bedRecords.self, from: jsonData)
                     self.bedList = bedData
                     var count = 0
-                    for aBed in bedData.beds {
-                        count += 1
-                        let theBedID = aBed.bed_id
-                        let theName = aBed.name
-                        print("\(count) + \(theBedID) + \(theName)")
-                    }
+//                    for aBed in bedData.beds {
+//                        count += 1
+//                        let theBedID = aBed.bed_id
+//                        let theName = aBed.name
+//                        print("\(count) + \(theBedID) + \(theName)")
+//                    }
                     self.bedsDecoded = true
                     print("B",self.bedsDecoded)
                     if self.bedsDecoded && self.plantsDecoded && self.imagesDecoded {
                         DispatchQueue.main.async {
-                            self.updateTheTable()
+                            
+                            if let list = self.bedList {
+                                for bed in list.beds {
+                                    if self.bedArray.isEmpty {
+                                        self.bedArray.insert(bed, at: 0)
+                                    }
+                                    else {
+                                        self.bedArray.append(bed)
+                                    }
+                                    
+                                }
+                                print(self.bedArray.count)
+                                self.updateTheTable()
+                            }
                         }
                     }
                     
@@ -186,14 +206,32 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                     print("P",self.plantsDecoded)
                     if self.bedsDecoded && self.plantsDecoded && self.imagesDecoded {
                         DispatchQueue.main.async {
-                            self.updateTheTable()
+                            
                             if let list = self.plantList {
                                 for plant in list.plants {
                                     self.plantDict[plant.bed ?? "no bed"] = plant.recnum
+                                    if self.allPlants.isEmpty {
+                                        self.allPlants.insert(plant, at: 0)
+                                    }
+                                    else {
+                                        self.allPlants.append(plant)
+                                    }
+                                    if plant.accsta == "C" {
+                                        if self.alivePlants.isEmpty {
+                                            self.alivePlants.insert(plant, at: 0)
+                                        }
+                                        else {
+                                            self.alivePlants.append(plant)
+                                        }
+                                    }
                                 }
-                                print("Printing dictionary:")
-                                print(self.plantDict)
+//                                print("Printing dictionary:")
+//                                print(self.plantDict)
                             }
+                            print("Filtering out plants")
+                            print("Plants filtered out: \(self.allPlants.count - self.alivePlants.count)")
+                            self.updateTheTable()
+
                             
                         }
                     }
@@ -228,11 +266,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                     let imageData = try decoder.decode(imageRecords.self, from: jsonData)
                     self.imageList = imageData
                     
-                    if let list = self.imageList {
-                        for image in list.images {
-                            self.retrieveImageData(imageFileName: image.img_file_name)
-                        }
-                    }
                     self.imagesDecoded = true
                     print("I",self.imagesDecoded)
                     if self.bedsDecoded && self.plantsDecoded && self.imagesDecoded {
@@ -283,11 +316,9 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
     
     func updateTheTable() {
-        if imagesDecoded {
-            myTable.reloadData()
-        }
-        
+        myTable.reloadData()
     }
+    
     
     //MARK: View related stuff
     override func viewDidLoad() {
