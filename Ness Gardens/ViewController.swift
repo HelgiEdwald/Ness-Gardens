@@ -34,7 +34,11 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     var plantDict:[String:String] = [:]
     var imageDict:[String:UIImage] = [:]
+    var bedDict:[String:[String]] = [:]
     
+    var bedIdArray: [String] = []
+    
+    var bedToRecnumDict: [String:[String]] = [:]
     
     //MARK: Map and Location
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
@@ -87,33 +91,34 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     //MARK: Table View
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return plantList?.plants.count ?? 0
+        return alivePlants.count
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
         return bedList?.beds.count ?? 0
+        
     }
     
     // Create a standard header that includes the returned text.
     func tableView(_ tableView: UITableView, titleForHeaderInSection
                                 section: Int) -> String? {
-        return "Bed Name: \(bedList?.beds[section].name ?? "no name")"
+        return "Bed Name: \(bedList?.beds[section].bed_id ?? "no id")"
     }
     
     // Create a standard footer that includes the returned text.
     func tableView(_ tableView: UITableView, titleForFooterInSection
                                 section: Int) -> String? {
-       return "Bed Name: \(bedList?.beds[section].name ?? "no name")"
+        return "Bed Name: \(bedList?.beds[section].bed_id ?? "no id")"
     }
 
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "myCell", for: indexPath) as! NessGardensTableViewCell
-        
-        cell.familyLabel.text = plantList?.plants[indexPath.row].family ?? "no family"
-        cell.speciesLabel.text = plantList?.plants[indexPath.row].species ?? "no species"
-        
-        let plantRecnum = plantList?.plants[indexPath.row].recnum
+        cell.thumbnailImageView.image = nil
+        cell.familyLabel.text = alivePlants[indexPath.row].family ?? "no family"
+        cell.speciesLabel.text = alivePlants[indexPath.row].species ?? "no species"
+        let plantRecnum = alivePlants[indexPath.row].recnum
+        cell.recnumLabel.text = plantRecnum
         
         let imageFileName = imageList?.images.first(where: { $0.recnum == plantRecnum })?.img_file_name ?? ""
         
@@ -145,15 +150,9 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                     let bedData = try decoder.decode(bedRecords.self, from: jsonData)
                     self.bedList = bedData
                     var count = 0
-//                    for aBed in bedData.beds {
-//                        count += 1
-//                        let theBedID = aBed.bed_id
-//                        let theName = aBed.name
-//                        print("\(count) + \(theBedID) + \(theName)")
-//                    }
+
                     self.bedsDecoded = true
-                    print("B",self.bedsDecoded)
-                    if self.bedsDecoded && self.plantsDecoded && self.imagesDecoded {
+                    print("B",self.bedsDecoded, "P", self.plantsDecoded, "I", self.imagesDecoded)
                         DispatchQueue.main.async {
                             
                             if let list = self.bedList {
@@ -164,13 +163,21 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                                     else {
                                         self.bedArray.append(bed)
                                     }
+                                    if self.bedIdArray.isEmpty {
+                                        self.bedIdArray.insert(bed.bed_id, at: 0)
+                                    }
+                                    else {
+                                        self.bedIdArray.append(bed.bed_id)
+                                    }
+                                    
+
                                     
                                 }
-                                print(self.bedArray.count)
+                                print(self.bedIdArray)
                                 self.updateTheTable()
                             }
                         }
-                    }
+                    
                     
                     
                 //catch error when data does not match structure
@@ -182,6 +189,9 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         }
         
     }
+    
+    
+    ///
     
     func decodePlantData() {
         
@@ -203,13 +213,12 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                     let plantData = try decoder.decode(plantRecords.self, from: jsonData)
                     self.plantList = plantData
                     self.plantsDecoded = true
-                    print("P",self.plantsDecoded)
+                    print("B",self.bedsDecoded, "P", self.plantsDecoded, "I", self.imagesDecoded)
                     if self.bedsDecoded && self.plantsDecoded && self.imagesDecoded {
                         DispatchQueue.main.async {
                             
                             if let list = self.plantList {
                                 for plant in list.plants {
-                                    self.plantDict[plant.bed ?? "no bed"] = plant.recnum
                                     if self.allPlants.isEmpty {
                                         self.allPlants.insert(plant, at: 0)
                                     }
@@ -219,19 +228,20 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                                     if plant.accsta == "C" {
                                         if self.alivePlants.isEmpty {
                                             self.alivePlants.insert(plant, at: 0)
+                                            
                                         }
                                         else {
                                             self.alivePlants.append(plant)
                                         }
+                                        self.bedDict[plant.recnum] = plant.bed?.components(separatedBy: .whitespaces)
                                     }
                                 }
-//                                print("Printing dictionary:")
-//                                print(self.plantDict)
-                            }
-                            print("Filtering out plants")
-                            print("Plants filtered out: \(self.allPlants.count - self.alivePlants.count)")
-                            self.updateTheTable()
 
+                            }
+                            
+                            self.alivePlants.sort(by: { $0.recnum < $1.recnum })
+                            self.updateTheTable()
+                            
                             
                         }
                     }
@@ -267,7 +277,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                     self.imageList = imageData
                     
                     self.imagesDecoded = true
-                    print("I",self.imagesDecoded)
+                    print("B",self.bedsDecoded, "P", self.plantsDecoded, "I", self.imagesDecoded)
                     if self.bedsDecoded && self.plantsDecoded && self.imagesDecoded {
                         DispatchQueue.main.async {
                             self.updateTheTable()

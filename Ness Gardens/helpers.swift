@@ -21,7 +21,7 @@ extension UIImageView {
                 }
             }
             else {
-                self?.image = nil
+                self?.image = UIImage(named: "no plant image")
             }
         }
     }

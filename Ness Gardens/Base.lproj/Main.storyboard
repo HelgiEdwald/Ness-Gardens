@@ -33,15 +33,22 @@
                                                     <rect key="frame" x="291" y="1" width="50" height="50"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                 </imageView>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lO4-wf-ZQk">
+                                                    <rect key="frame" x="20" y="15" width="42" height="21"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Kc7-Zu-ofn">
-                                                    <rect key="frame" x="20" y="1" width="263" height="21"/>
+                                                    <rect key="frame" x="70" y="1" width="213" height="21"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="j4b-fp-TwY">
-                                                    <rect key="frame" x="20" y="30" width="263" height="21"/>
+                                                    <rect key="frame" x="70" y="30" width="213" height="21"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <fontDescription key="fontDescription" type="italicSystem" pointSize="15"/>
                                                     <nil key="textColor"/>
@@ -51,6 +58,7 @@
                                         </tableViewCellContentView>
                                         <connections>
                                             <outlet property="familyLabel" destination="Kc7-Zu-ofn" id="VJm-nn-hDj"/>
+                                            <outlet property="recnumLabel" destination="lO4-wf-ZQk" id="e4X-f1-Ris"/>
                                             <outlet property="speciesLabel" destination="j4b-fp-TwY" id="hFU-WZ-QAk"/>
                                             <outlet property="thumbnailImageView" destination="zPD-ss-4Ih" id="Xxa-JV-ArI"/>
                                         </connections>
@@ -80,7 +88,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="127.48091603053435" y="103.52112676056339"/>
+            <point key="canvasLocation" x="-73.134328358208947" y="101.60183066361556"/>
         </scene>
     </scenes>
     <resources>

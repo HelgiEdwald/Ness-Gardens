@@ -13,6 +13,8 @@ class NessGardensTableViewCell: UITableViewCell {
     @IBOutlet weak var thumbnailImageView: UIImageView!
     @IBOutlet weak var familyLabel: UILabel!
     @IBOutlet weak var speciesLabel: UILabel!
+    @IBOutlet weak var recnumLabel: UILabel!
+    
     
     override func awakeFromNib() {
         super.awakeFromNib()
