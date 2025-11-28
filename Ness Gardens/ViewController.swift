@@ -33,7 +33,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     var imageDict:[String:UIImage] = [:]
     
     
-    //MARK: Map and Location related stuff
+    //MARK: Map and Location
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         let locationOfUser = locations[0] //this method returns an array of locations
         
@@ -82,7 +82,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         startTrackingTheUser = true
     }
     
-    //MARK: Table related stuff
+    //MARK: Table View
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return plantList?.plants.count ?? 0
     }
@@ -105,6 +105,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         return cell
     }
     
+    //MARK: Decoding JSON data
     func decodeBedData() {
         
         //set up the URL
@@ -150,7 +151,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
     }
     
-    //TODO: combine these two functions into one
     func decodePlantData() {
         
         //set up the URL
@@ -230,9 +230,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         }
     }
     
-
-    
-    
     func retrieveImageData(imageFileName: String){
         //set up the URL
         if let url = URL(string: "https://cgi.csc.liv.ac.uk/~phil/Teaching/COMP228/ness_thumbnails/\(imageFileName)") {
@@ -302,7 +299,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         decodePlantData()
         
         decodeImageData()
-        
         
     }
 }
