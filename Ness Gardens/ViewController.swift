@@ -38,7 +38,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     var bedIdArray: [String] = []
     
-    var bedToRecnumDict: [String:[String]] = [:]
+    var bedToRecnumDict: [String:[Plant]] = [:]
     
     //MARK: Map and Location
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
@@ -172,7 +172,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
 
                                     
                                 }
-                                print(self.bedIdArray)
                                 self.updateTheTable()
                             }
                         }
@@ -184,13 +183,14 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                     print("Error decoding JSON", jsonErr)
                 }
             }.resume()
-            print("You are here!")
+            print("decoding bed data")
         }
         
     }
     
     
     ///
+    
     
     func decodePlantData() {
         
@@ -213,7 +213,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                     self.plantList = plantData
                     self.plantsDecoded = true
                     print("B",self.bedsDecoded, "P", self.plantsDecoded, "I", self.imagesDecoded)
-                    if self.bedsDecoded && self.plantsDecoded && self.imagesDecoded {
+                    
                         DispatchQueue.main.async {
                             
                             if let list = self.plantList {
@@ -232,10 +232,39 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                                         else {
                                             self.alivePlants.append(plant)
                                         }
-                                        self.bedDict[plant.recnum] = plant.bed?.components(separatedBy: .whitespaces)
+                                        
+                                        
                                     }
                                 }
+                                for aPlant in self.alivePlants {
+                                    let bedList = aPlant.bed ?? ""
+                                    let bedArray = bedList.components(separatedBy: .whitespaces)
+                                    
+                                    for aBed in bedArray {
+                                        if self.bedIdArray.contains(aBed) {
+                                            var currentBedPlantArray = self.bedToRecnumDict[aBed] ?? []
+                                            currentBedPlantArray.append(aPlant)
+                                            self.bedToRecnumDict[aBed] = currentBedPlantArray
+                                        }
+                                        
+                                    }
+                                    
+                                    
+                                    
+                                }
+//                                let dictToArray = Array(self.bedToRecnumDict.keys)
+//                                print("Array from keys has \(dictToArray.count) elements")
+//                                print(dictToArray)
+//                                
+//                                var newArray: [String] = []
+//                                newArray = dictToArray.filter {!self.bedIdArray.contains($0) }
+//                                
+//                                print("Printing new array")
+//                                print("New array has \(newArray.count) elements")
+//                                print(newArray)
+//                                print(self.bedIdArray)
 
+                                
                             }
                             
                             self.alivePlants.sort(by: { $0.recnum < $1.recnum })
@@ -243,14 +272,15 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                             
                             
                         }
-                    }
+                        print("processing completed")
+                    
                     
                 //catch error when data does not match structure
                 } catch let jsonErr {
                     print("Error decoding JSON", jsonErr)
                 }
             }.resume()
-            print("You are here!")
+            print("decoding plant data")
         }
         
         
@@ -288,7 +318,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                     print("Error decoding JSON", jsonErr)
                 }
             }.resume()
-            print("You are here!")
+            print("decoding image data")
         }
     }
     
