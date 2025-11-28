@@ -267,7 +267,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                                 
                             }
                             
-                            self.alivePlants.sort(by: { $0.recnum < $1.recnum })
+                            
                             self.updateTheTable()
                             
                             
