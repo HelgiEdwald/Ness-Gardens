@@ -20,12 +20,14 @@ class ViewController: UIViewController, UITableViewDelegate,
     var locationManager = CLLocationManager()
     var firstRun = true
     var startTrackingTheUser = false
+    
     var plantList: plantRecords? = nil
     var allPlants: [Plant] = []
     var alivePlants: [Plant] = []
     var imageList: imageRecords? = nil
     var bedList: bedRecords? = nil
     var bedArray: [Bed] = []
+    
     var bedsDecoded = false
     var plantsDecoded = false
     var imagesDecoded = true
@@ -36,7 +38,7 @@ class ViewController: UIViewController, UITableViewDelegate,
 
     var bedIdArray: [String] = []
 
-    var bedToRecnumDict: [String: [Plant]] = [:]
+    var bedToPlantDict: [String: [Plant]] = [:]
 
     //MARK: Map and Location
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
@@ -90,7 +92,7 @@ class ViewController: UIViewController, UITableViewDelegate,
     //MARK: Table View
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         let currentBedId = bedIdArray[section]
-        return bedToRecnumDict[currentBedId]?.count ?? 0
+        return bedToPlantDict[currentBedId]?.count ?? 0
         
     }
 
@@ -105,11 +107,11 @@ class ViewController: UIViewController, UITableViewDelegate,
         return "Bed Name: \(bedList?.beds[section].bed_id ?? "no id")"
     }
 
-//    // Create a standard footer that includes the returned text.
-//    func tableView(_ tableView: UITableView, titleForFooterInSection
-//                                section: Int) -> String? {
-//        return "Bed Name: \(bedList?.beds[section].bed_id ?? "no id")"
-//    }
+    // Create a standard footer that includes the returned text.
+    func tableView(_ tableView: UITableView, titleForFooterInSection
+                                section: Int) -> String? {
+        return "Bed Name: \(bedList?.beds[section].bed_id ?? "no id")"
+    }
 
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -119,7 +121,7 @@ class ViewController: UIViewController, UITableViewDelegate,
 
         let currentBedId = bedIdArray[indexPath.section]
         
-        guard let plantInSection = bedToRecnumDict[currentBedId] else {
+        guard let plantInSection = bedToPlantDict[currentBedId] else {
             return cell
         }
         
@@ -262,9 +264,9 @@ class ViewController: UIViewController, UITableViewDelegate,
                                 for aBed in bedArray {
                                     if self.bedIdArray.contains(aBed) {
                                         var currentBedPlantArray =
-                                            self.bedToRecnumDict[aBed] ?? []
+                                            self.bedToPlantDict[aBed] ?? []
                                         currentBedPlantArray.append(aPlant)
-                                        self.bedToRecnumDict[aBed] =
+                                        self.bedToPlantDict[aBed] =
                                             currentBedPlantArray
                                     }
 
