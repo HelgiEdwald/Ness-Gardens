@@ -261,24 +261,7 @@ class ViewController: UIViewController, UITableViewDelegate,
 
                                 }
                             }
-                            for aPlant in self.alivePlants {
-                                let bedList = aPlant.bed ?? ""
-                                let bedArray = bedList.components(
-                                    separatedBy: .whitespaces
-                                )
-
-                                for aBed in bedArray {
-                                    if self.bedIdArray.contains(aBed) {
-                                        var currentBedPlantArray =
-                                            self.bedToPlantDict[aBed] ?? []
-                                        currentBedPlantArray.append(aPlant)
-                                        self.bedToPlantDict[aBed] =
-                                            currentBedPlantArray
-                                    }
-
-                                }
-
-                            }
+                            self.populateBedToPlantDict()
 
                         }
 
@@ -297,6 +280,29 @@ class ViewController: UIViewController, UITableViewDelegate,
             print("decoding plant data")
         }
 
+    }
+    
+    func populateBedToPlantDict() {
+        
+        for aPlant in self.alivePlants {
+            let bedList = aPlant.bed ?? ""
+            let bedArray = bedList.components(
+                separatedBy: .whitespaces
+            )
+
+            for aBed in bedArray {
+                if self.bedIdArray.contains(aBed) {
+                    var currentBedPlantArray =
+                        self.bedToPlantDict[aBed] ?? []
+                    currentBedPlantArray.append(aPlant)
+                    self.bedToPlantDict[aBed] =
+                        currentBedPlantArray
+                }
+
+            }
+            
+        }
+        
     }
 
     func decodeImageData() {
