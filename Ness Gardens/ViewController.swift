@@ -91,8 +91,10 @@ class ViewController: UIViewController, UITableViewDelegate,
 
     //MARK: Table View
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        
         let currentBedId = bedIdArray[section]
         return bedToPlantDict[currentBedId]?.count ?? 0
+        
         
     }
 
@@ -104,13 +106,17 @@ class ViewController: UIViewController, UITableViewDelegate,
     // Create a standard header that includes the returned text.
     func tableView(_ tableView: UITableView, titleForHeaderInSection
                                 section: Int) -> String? {
-        return "Bed Name: \(bedList?.beds[section].bed_id ?? "no id")"
+        let bedNameString = bedList?.beds.first(where: {$0.bed_id == bedIdArray[section]})?.name ?? "no name"
+        
+        return "Bed: \(bedNameString)"
     }
 
     // Create a standard footer that includes the returned text.
     func tableView(_ tableView: UITableView, titleForFooterInSection
                                 section: Int) -> String? {
-        return "Bed Name: \(bedList?.beds[section].bed_id ?? "no id")"
+        let bedNameString = bedList?.beds.first(where: {$0.bed_id == bedIdArray[section]})?.name ?? "no name"
+        
+        return "Bed: \(bedNameString)"
     }
 
     
