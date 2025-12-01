@@ -39,6 +39,14 @@ class ViewController: UIViewController, UITableViewDelegate,
     var bedIdArray: [String] = []
 
     var bedToPlantDict: [String: [Plant]] = [:]
+    
+    //MARK: Variables to pass along to detail view controller
+    
+    var selectedPlant: Plant?
+    var selectedPlantRecnum: String?
+    var selectedPlantFamily: String?
+    var selectedPlantSpecies: String?
+    var selectedPlantImage: UIImage?
 
     //MARK: Map and Location
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
@@ -147,6 +155,30 @@ class ViewController: UIViewController, UITableViewDelegate,
         return cell
     }
 
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+        
+        let currentBedId = bedIdArray[indexPath.section]
+        let plantInSection = bedToPlantDict[currentBedId]
+        let cellPlant = plantInSection?[indexPath.row]
+
+        selectedPlant = cellPlant
+        
+        print("Selected Plant: \(selectedPlant?.recnum ?? "")")
+        
+        performSegue(withIdentifier: "toDetail", sender: cellPlant)
+        
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "toDetail" {
+            
+            let detailViewController = segue.destination as! DetailViewController
+            
+            detailViewController.plantReceived = selectedPlant
+            
+        }
+    }
     //MARK: Decoding JSON data
     func decodeBedData() {
         

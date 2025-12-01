@@ -84,11 +84,40 @@
                     <connections>
                         <outlet property="myMap" destination="6d3-x1-CEf" id="GRY-Zz-acQ"/>
                         <outlet property="myTable" destination="1dJ-3Y-WuK" id="Mvv-Dz-WrG"/>
+                        <segue destination="PGd-A3-mHQ" kind="show" identifier="toDetail" id="jT9-52-sLx"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-73.134328358208947" y="101.60183066361556"/>
+            <point key="canvasLocation" x="-21" y="102"/>
+        </scene>
+        <!--Detail View Controller-->
+        <scene sceneID="DBv-QR-RIc">
+            <objects>
+                <viewController id="PGd-A3-mHQ" customClass="DetailViewController" customModule="Ness_Gardens" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="Zda-H7-AdO">
+                        <rect key="frame" x="0.0" y="0.0" width="402" height="812"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yPY-c9-2Bs">
+                                <rect key="frame" x="180" y="427" width="42" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="SHr-sb-SfH"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="psu-eO-nXp"/>
+                    <connections>
+                        <outlet property="recnumLabel" destination="yPY-c9-2Bs" id="dHt-LV-a7R"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="xle-az-1hc" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="866" y="102"/>
         </scene>
     </scenes>
     <resources>
