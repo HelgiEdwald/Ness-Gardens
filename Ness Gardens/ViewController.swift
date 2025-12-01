@@ -245,22 +245,7 @@ class ViewController: UIViewController, UITableViewDelegate,
                     DispatchQueue.main.async {
 
                         if let list = self.plantList {
-                            for plant in list.plants {
-                                if self.allPlants.isEmpty {
-                                    self.allPlants.insert(plant, at: 0)
-                                } else {
-                                    self.allPlants.append(plant)
-                                }
-                                if plant.accsta == "C" {
-                                    if self.alivePlants.isEmpty {
-                                        self.alivePlants.insert(plant, at: 0)
-
-                                    } else {
-                                        self.alivePlants.append(plant)
-                                    }
-
-                                }
-                            }
+                            self.filterOutDeadPlants(list: list)
                             self.populateBedToPlantDict()
 
                         }
@@ -280,6 +265,25 @@ class ViewController: UIViewController, UITableViewDelegate,
             print("decoding plant data")
         }
 
+    }
+    
+    func filterOutDeadPlants(list: plantRecords) {
+        for plant in list.plants {
+            if self.allPlants.isEmpty {
+                self.allPlants.insert(plant, at: 0)
+            } else {
+                self.allPlants.append(plant)
+            }
+            if plant.accsta == "C" {
+                if self.alivePlants.isEmpty {
+                    self.alivePlants.insert(plant, at: 0)
+
+                } else {
+                    self.alivePlants.append(plant)
+                }
+
+            }
+        }
     }
     
     func populateBedToPlantDict() {
