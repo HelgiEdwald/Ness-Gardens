@@ -19,10 +19,13 @@ extension UIImageView {
                         self?.image = image
                     }
                 }
+                else {
+                    DispatchQueue.main.async {
+                        self?.image = UIImage(named: "no plant image")
+                    }
+                }
             }
-            else {
-                self?.image = UIImage(named: "no plant image")
-            }
+            
         }
     }
 }
