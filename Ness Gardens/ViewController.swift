@@ -194,6 +194,7 @@ class ViewController: UIViewController, UITableViewDelegate,
                                 
                             }
                             self.updateTheTable()
+                            self.addBedsToMap(bedArray: self.bedArray)
                         }
                     }
                     
@@ -393,6 +394,17 @@ class ViewController: UIViewController, UITableViewDelegate,
         myTable.reloadData()
     }
 
+    func addBedsToMap(bedArray: [Bed]) {
+        
+        for bed in bedArray {
+            let coordinate = CLLocationCoordinate2D(latitude: Double(bed.latitude)! , longitude: Double(bed.longitude)!)
+            let annotation = MKPointAnnotation()
+            annotation.coordinate = coordinate
+            annotation.title = bed.name
+            self.myMap.addAnnotation(annotation)
+        }
+    }
+    
     //MARK: View related stuff
     override func viewDidLoad() {
         super.viewDidLoad()
