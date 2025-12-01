@@ -89,11 +89,13 @@ class ViewController: UIViewController, UITableViewDelegate,
 
     //MARK: Table View
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return alivePlants.count
+        let currentBedId = bedIdArray[section]
+        return bedToRecnumDict[currentBedId]?.count ?? 0
+        
     }
 
     func numberOfSections(in tableView: UITableView) -> Int {
-        return bedList?.beds.count ?? 0
+        return bedIdArray.count
 
     }
 
@@ -103,29 +105,37 @@ class ViewController: UIViewController, UITableViewDelegate,
         return "Bed Name: \(bedList?.beds[section].bed_id ?? "no id")"
     }
 
-    // Create a standard footer that includes the returned text.
-    func tableView(_ tableView: UITableView, titleForFooterInSection
-                                section: Int) -> String? {
-        return "Bed Name: \(bedList?.beds[section].bed_id ?? "no id")"
-    }
+//    // Create a standard footer that includes the returned text.
+//    func tableView(_ tableView: UITableView, titleForFooterInSection
+//                                section: Int) -> String? {
+//        return "Bed Name: \(bedList?.beds[section].bed_id ?? "no id")"
+//    }
 
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "myCell", for: indexPath) as! NessGardensTableViewCell
-        
         cell.thumbnailImageView.image = nil
-        cell.familyLabel.text = alivePlants[indexPath.row].family ?? "no family"
-        cell.speciesLabel.text = alivePlants[indexPath.row].species ?? "no species"
-        let plantRecnum = alivePlants[indexPath.row].recnum
-        cell.recnumLabel.text = plantRecnum
+
+        let currentBedId = bedIdArray[indexPath.section]
         
-        let imageFileName = imageList?.images.first(where: { $0.recnum == plantRecnum })?.img_file_name ?? ""
+        guard let plantInSection = bedToRecnumDict[currentBedId] else {
+            return cell
+        }
+        
+        let cellPlant = plantInSection[indexPath.row]
+        
+        cell.recnumLabel.text = cellPlant.recnum
+        cell.familyLabel.text = cellPlant.family
+        cell.speciesLabel.text = cellPlant.species
+        
+        let imageFileName = imageList?.images.first(where: { $0.recnum == cellPlant.recnum })?.img_file_name ?? ""
         
         let urlString = "https://cgi.csc.liv.ac.uk/~phil/Teaching/COMP228/ness_thumbnails/\(imageFileName)"
         let url = URL(string: urlString)!
         
         cell.thumbnailImageView.load(url:url)
+        
         return cell
     }
 
