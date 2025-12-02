@@ -20,6 +20,10 @@ class DetailViewController: UIViewController {
     var plantReceived: Plant?
     var selectedPlantImage: UIImage?
     var receivedPlantImageFileName: String?
+    var receivedImageFileNameArray: [String] = []
+    
+    
+    var currentImageIndex = 0
 
 
     @IBAction func backButtonPressed(_ sender: Any) {
@@ -29,9 +33,11 @@ class DetailViewController: UIViewController {
         super.viewDidLoad()
         
         print("Detail received: \(plantReceived?.recnum ?? "No recnum")")
-        
+        print("Img list of received plant: \(receivedImageFileNameArray)")
+
+        plantTextView.text.append("\n\n")
         if let familyString = plantReceived?.family, !familyString.isEmpty {
-            plantTextView.text.append("\nFamily: \(familyString)\n\n")
+            plantTextView.text.append("Family: \(familyString)\n\n")
         }
         else {
             plantTextView.text.append("Family: No family\n\n")
@@ -52,9 +58,9 @@ class DetailViewController: UIViewController {
         }
 
                 
-        let imageFileName = receivedPlantImageFileName
+        let imageFileName = receivedImageFileNameArray[currentImageIndex]
         
-        let urlString = "https://cgi.csc.liv.ac.uk/~phil/Teaching/COMP228/ness_images/\(imageFileName ?? "Error")"
+        let urlString = "https://cgi.csc.liv.ac.uk/~phil/Teaching/COMP228/ness_images/\(imageFileName)"
         let url = URL(string: urlString)!
         
         plantImageView1.load(url:url)
@@ -82,6 +88,94 @@ class DetailViewController: UIViewController {
             plantMapView.isHidden = true
         }
         
+    }
+    
+    @IBAction func previousImageButtonTapped(_ sender: Any) {
+        
+        if currentImageIndex != 0 {
+            currentImageIndex = currentImageIndex - 1
+        } else {
+            currentImageIndex = receivedImageFileNameArray.count - 1
+        }
+        
+        let imageFileName = receivedImageFileNameArray[currentImageIndex]
+        
+       
+        print("currentImageIndex: \(currentImageIndex)")
+        print(receivedImageFileNameArray.count - 1)
+        
+        
+        if let url = URL(string: "https://cgi.csc.liv.ac.uk/~phil/Teaching/COMP228/ness_images/\(imageFileName)") {
+            
+            //create a URL session running on a background thread
+            let session = URLSession.shared
+
+            //create a data task supplied with the URL returning a tuple of the data we want, a response code from the data server, and any error message
+            session.dataTask(with: url) { (data, response, err) in
+                //try to get at data
+                guard let jsonData = data else {
+                    return
+                }
+                //decode data if accessed ok
+                do {
+                    DispatchQueue.main.async {
+                        self.plantImageView1.image = UIImage(data: jsonData)
+                    }
+
+                    
+                }
+                
+                //catch error when data does not match structure
+                catch let jsonErr {
+                    print("Error decoding JSON", jsonErr)
+                }
+            }.resume()
+            print("decoding image data")
+        }
+        
+    }
+    
+    @IBAction func nextImageButtonTapped(_ sender: Any) {
+        if currentImageIndex != (receivedImageFileNameArray.count - 1) {
+            currentImageIndex = currentImageIndex + 1
+        } else {
+            currentImageIndex = 0
+        }
+        
+        let imageFileName = receivedImageFileNameArray[currentImageIndex]
+        
+       
+        print("currentImageIndex: \(currentImageIndex)")
+        print(receivedImageFileNameArray.count - 1)
+        
+        
+        if let url = URL(string: "https://cgi.csc.liv.ac.uk/~phil/Teaching/COMP228/ness_images/\(imageFileName)") {
+            
+            //create a URL session running on a background thread
+            let session = URLSession.shared
+
+            //create a data task supplied with the URL returning a tuple of the data we want, a response code from the data server, and any error message
+            session.dataTask(with: url) { (data, response, err) in
+                //try to get at data
+                guard let jsonData = data else {
+                    return
+                }
+                //decode data if accessed ok
+                do {
+                    DispatchQueue.main.async {
+                        self.plantImageView1.image = UIImage(data: jsonData)
+                    }
+
+                    
+                }
+                
+                //catch error when data does not match structure
+                catch let jsonErr {
+                    print("Error decoding JSON", jsonErr)
+                }
+            }.resume()
+            print("decoding image data")
+        }
     }
     
 

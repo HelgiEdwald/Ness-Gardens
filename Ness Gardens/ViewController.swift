@@ -50,6 +50,8 @@ class ViewController: UIViewController, UITableViewDelegate,
     var selectedPlantImage: UIImage?
     
     var selectedPlantImageFileName: String?
+    
+    var selectedImageFileNameArray: [String] = []
 
     //MARK: Map and Location
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
@@ -219,6 +221,12 @@ class ViewController: UIViewController, UITableViewDelegate,
         if segue.identifier == "toDetail" {
             
             let detailViewController = segue.destination as! DetailViewController
+                        
+            selectedImageFileNameArray = imageList?.images.filter({$0.recnum == selectedPlant?.recnum}).map(\.img_file_name) ?? []
+            
+            print("Img list of selected plant: \(selectedImageFileNameArray)")
+            
+            detailViewController.receivedImageFileNameArray = selectedImageFileNameArray
             
             detailViewController.plantReceived = selectedPlant
             
