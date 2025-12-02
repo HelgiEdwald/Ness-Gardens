@@ -110,7 +110,11 @@ class ViewController: UIViewController, UITableViewDelegate,
             }
             
             for bed in sortedBedArray {
-                newBedIdArray.append(bed.bed_id)
+                if self.bedToPlantDict[bed.bed_id] != nil {
+                    newBedIdArray.append(bed.bed_id)
+                }
+                
+                
             }
             
             self.bedIdArray = newBedIdArray
@@ -282,7 +286,6 @@ class ViewController: UIViewController, UITableViewDelegate,
                                 
                             }
                             self.updateTheTable()
-                            self.addBedsToMap(bedArray: self.bedArray)
                         }
                     }
                     
@@ -334,6 +337,8 @@ class ViewController: UIViewController, UITableViewDelegate,
                         if let list = self.plantList {
                             self.filterOutDeadPlants(list: list)
                             self.populateBedToPlantDict()
+                            self.addBedsToMap(bedArray: self.bedArray)
+                            
 
                         }
 
@@ -481,13 +486,16 @@ class ViewController: UIViewController, UITableViewDelegate,
     }
 
     func addBedsToMap(bedArray: [Bed]) {
-        
+   print("in function")
         for bed in bedArray {
-            let coordinate = CLLocationCoordinate2D(latitude: Double(bed.latitude)! , longitude: Double(bed.longitude)!)
-            let annotation = MKPointAnnotation()
-            annotation.coordinate = coordinate
-            annotation.title = bed.name
-            self.myMap.addAnnotation(annotation)
+            if bedToPlantDict[bed.bed_id] != nil {
+                let coordinate = CLLocationCoordinate2D(latitude: Double(bed.latitude)! , longitude: Double(bed.longitude)!)
+                let annotation = MKPointAnnotation()
+                annotation.coordinate = coordinate
+                annotation.title = bed.name
+                self.myMap.addAnnotation(annotation)
+            }
+            
         }
     }
     
