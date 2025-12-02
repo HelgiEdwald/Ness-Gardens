@@ -94,26 +94,16 @@ class ViewController: UIViewController, UITableViewDelegate,
     
         
         DispatchQueue.main.async {
+            
+            let newSortedBedArray = self.sortBedArrayByProximity(arrayOfBeds: self.bedArray, userLatitude: latitude, userLongitude: longitude)
+            
             var newBedIdArray: [String] = []
         
             
-            let sortedBedArray = self.bedArray.sorted { (bed1, bed2) -> Bool in
-                
-                let bed1location = CLLocation(latitude: Double(bed1.latitude)!, longitude: Double(bed1.longitude)!)
-                let bed2location = CLLocation(latitude: Double(bed2.latitude)!, longitude: Double(bed2.longitude)!)
-                
-                let userLocation = CLLocation(latitude: latitude, longitude: longitude)
-                
-                
-                return bed1location.distance(from: userLocation) < bed2location.distance(from: userLocation)
-                
-            }
-            
-            for bed in sortedBedArray {
+            for bed in newSortedBedArray {
                 if self.bedToPlantDict[bed.bed_id] != nil {
                     newBedIdArray.append(bed.bed_id)
                 }
-                
                 
             }
             
@@ -166,7 +156,7 @@ class ViewController: UIViewController, UITableViewDelegate,
         
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "myCell", for: indexPath) as! NessGardensTableViewCell
-        cell.thumbnailImageView.image = nil
+       
         
         let currentBedId = bedIdArray[indexPath.section]
         
@@ -175,11 +165,12 @@ class ViewController: UIViewController, UITableViewDelegate,
         }
         
         let cellPlant = plantInSection[indexPath.row]
-        
+        cell.thumbnailImageView.image = UIImage(named: "no plant image")
         
         cell.recnumLabel.text = cellPlant.recnum
         cell.familyLabel.text = cellPlant.family
         cell.speciesLabel.text = cellPlant.species
+        
         if UserDefaults.standard.bool(forKey: "\(cellPlant.recnum)") {
             cell.favouriteButton.setImage(UIImage(systemName: "star.fill"), for: .normal)
         } else {
@@ -500,6 +491,23 @@ class ViewController: UIViewController, UITableViewDelegate,
             }
             
         }
+    }
+    
+    func sortBedArrayByProximity(arrayOfBeds: [Bed], userLatitude: CLLocationDegrees, userLongitude: CLLocationDegrees) -> Array<Bed>{
+        
+        let sortedBedArray = arrayOfBeds.sorted { (bed1, bed2) -> Bool in
+            
+            let bed1location = CLLocation(latitude: Double(bed1.latitude)!, longitude: Double(bed1.longitude)!)
+            let bed2location = CLLocation(latitude: Double(bed2.latitude)!, longitude: Double(bed2.longitude)!)
+            
+            let userLocation = CLLocation(latitude: userLatitude, longitude: userLongitude)
+            
+            return bed1location.distance(from: userLocation) < bed2location.distance(from: userLocation)
+            
+        }
+        
+        return sortedBedArray
+        
     }
     
     //MARK: View related stuff
