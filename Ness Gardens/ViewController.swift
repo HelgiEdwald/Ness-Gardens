@@ -20,6 +20,7 @@ class ViewController: UIViewController, UITableViewDelegate,
     var locationManager = CLLocationManager()
     var firstRun = true
     var startTrackingTheUser = false
+    var userLocation = CLLocationCoordinate2D(latitude: 0.0, longitude: 0.0)
     
     var plantList: plantRecords? = nil
     var allPlants: [Plant] = []
@@ -60,12 +61,12 @@ class ViewController: UIViewController, UITableViewDelegate,
 
         //get the users location (latitude & longitude)
         let location = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
-        
+        userLocation = location
         if firstRun {
             firstRun = false
 
-            let latDelta: CLLocationDegrees = 0.0010
-            let lonDelta: CLLocationDegrees = 0.0010
+            let latDelta: CLLocationDegrees = 0.0005
+            let lonDelta: CLLocationDegrees = 0.0005
 
             //a span defines how large an area is depicted on the map.
             let span = MKCoordinateSpan(latitudeDelta: latDelta, longitudeDelta: lonDelta)
@@ -89,6 +90,32 @@ class ViewController: UIViewController, UITableViewDelegate,
 
         if startTrackingTheUser == true {
             myMap.setCenter(location, animated: true)
+        }
+    
+        
+        DispatchQueue.main.async {
+            var newBedIdArray: [String] = []
+        
+            
+            let sortedBedArray = self.bedArray.sorted { (bed1, bed2) -> Bool in
+                
+                let bed1location = CLLocation(latitude: Double(bed1.latitude)!, longitude: Double(bed1.longitude)!)
+                let bed2location = CLLocation(latitude: Double(bed2.latitude)!, longitude: Double(bed2.longitude)!)
+                
+                let userLocation = CLLocation(latitude: latitude, longitude: longitude)
+                
+                
+                return bed1location.distance(from: userLocation) < bed2location.distance(from: userLocation)
+                
+            }
+            
+            for bed in sortedBedArray {
+                newBedIdArray.append(bed.bed_id)
+            }
+            
+            self.bedIdArray = newBedIdArray
+            self.myTable.reloadData()
+            
         }
 
     }
