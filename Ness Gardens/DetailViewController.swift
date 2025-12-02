@@ -6,12 +6,14 @@
 //
 
 import UIKit
+import MapKit
 
 class DetailViewController: UIViewController {
     
     //MARK: Outlets
     @IBOutlet weak var recnumLabel: UILabel!
     @IBOutlet weak var plantImageView1: UIImageView!
+    @IBOutlet weak var plantMapView: MKMapView!
     
     
     
@@ -38,6 +40,29 @@ class DetailViewController: UIViewController {
         
         plantImageView1.load(url:url)
         // Do any additional setup after loading the view.
+        
+        let span = MKCoordinateSpan(latitudeDelta: 10, longitudeDelta: 10)
+        
+        if let lat = plantReceived?.latitude, !lat.isEmpty {
+            guard let lon = plantReceived?.longitude else { return }
+            guard let latitude = Double(lat) else { return }
+            guard let longitude = Double(lon) else { return }
+            let coordinate = CLLocationCoordinate2D(
+                latitude: latitude,
+                longitude: longitude
+            )
+            let annotation = MKPointAnnotation()
+            annotation.coordinate = coordinate
+            
+            plantMapView.addAnnotation(annotation)
+            
+            let region = MKCoordinateRegion(center: coordinate, span: span)
+            plantMapView.setRegion(region, animated: true)
+        }
+        else {
+            plantMapView.isHidden = true
+        }
+        
     }
     
 

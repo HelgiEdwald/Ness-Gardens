@@ -35,7 +35,9 @@ class ViewController: UIViewController, UITableViewDelegate,
     var plantDict: [String: String] = [:]
     var imageDict: [String: UIImage] = [:]
     var bedDict: [String: [String]] = [:]
-
+    var favouritedPlants: [String: Bool] = [:]
+    
+    
     var bedIdArray: [String] = []
 
     var bedToPlantDict: [String: [Plant]] = [:]
@@ -130,9 +132,11 @@ class ViewController: UIViewController, UITableViewDelegate,
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
+        
+        
         let cell = tableView.dequeueReusableCell(withIdentifier: "myCell", for: indexPath) as! NessGardensTableViewCell
         cell.thumbnailImageView.image = nil
-
+        
         let currentBedId = bedIdArray[indexPath.section]
         
         guard let plantInSection = bedToPlantDict[currentBedId] else {
@@ -141,9 +145,26 @@ class ViewController: UIViewController, UITableViewDelegate,
         
         let cellPlant = plantInSection[indexPath.row]
         
+        
         cell.recnumLabel.text = cellPlant.recnum
         cell.familyLabel.text = cellPlant.family
         cell.speciesLabel.text = cellPlant.species
+        
+        if favouritedPlants[cellPlant.recnum] == true{
+            cell.favouriteButton.setImage(UIImage(systemName: "star.fill"), for: .normal)
+        } else {
+            cell.favouriteButton.setImage(UIImage(systemName: "star"), for: .normal)
+        }
+        cell.favButtonPressed = { [ weak self ] in
+            if self!.favouritedPlants[cellPlant.recnum] == true {
+                self!.favouritedPlants[cellPlant.recnum] = false
+                cell.favouriteButton.setImage(UIImage(systemName: "star.fill"), for: .normal)
+            }
+            else {
+                self!.favouritedPlants[cellPlant.recnum] = true
+                cell.favouriteButton.setImage(UIImage(systemName: "star"), for: .normal)
+            }
+        }
         
         let imageFileName = imageList?.images.first(where: { $0.recnum == cellPlant.recnum })?.img_file_name ?? ""
         
@@ -253,8 +274,6 @@ class ViewController: UIViewController, UITableViewDelegate,
         }
         
     }
-
-    ///
 
     func decodePlantData() {
 

@@ -14,7 +14,9 @@ class NessGardensTableViewCell: UITableViewCell {
     @IBOutlet weak var familyLabel: UILabel!
     @IBOutlet weak var speciesLabel: UILabel!
     @IBOutlet weak var recnumLabel: UILabel!
+    @IBOutlet weak var favouriteButton: UIButton!
     
+    var favButtonPressed : (() -> ()) = {}
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -26,5 +28,8 @@ class NessGardensTableViewCell: UITableViewCell {
 
         // Configure the view for the selected state
     }
-
+    @IBAction func favButtonPressed(_ sender: Any) {
+        favButtonPressed()
+    }
+    
 }
