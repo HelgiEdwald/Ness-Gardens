@@ -180,18 +180,22 @@ class ViewController: UIViewController, UITableViewDelegate,
         cell.recnumLabel.text = cellPlant.recnum
         cell.familyLabel.text = cellPlant.family
         cell.speciesLabel.text = cellPlant.species
-        cell.favouriteButton.setImage(UIImage(systemName: "star"), for: .normal)
+        if favouritedPlants[cellPlant.recnum]! {
+            cell.favouriteButton.setImage(UIImage(systemName: "star.fill"), for: .normal)
+        } else {
+            cell.favouriteButton.setImage(UIImage(systemName: "star"), for: .normal)
+        }
         
         cell.favButtonPressed = { [ weak self ] in
-            if cell.favouriteButton.currentImage == UIImage(systemName: "star") {
-                cell.favouriteButton.setImage(UIImage(systemName: "star.fill"), for: .normal)
-            }
-            else if cell.favouriteButton.currentImage == UIImage(systemName: "star.fill") {
+            if self!.favouritedPlants[cellPlant.recnum]! {
                 cell.favouriteButton.setImage(UIImage(systemName: "star"), for: .normal)
+                self!.favouritedPlants[cellPlant.recnum] = false
             }
             else {
-                cell.favouriteButton.setImage(UIImage(systemName: "eraser"), for: .normal)
+                cell.favouriteButton.setImage(UIImage(systemName: "star.fill"), for: .normal)
+                self!.favouritedPlants[cellPlant.recnum] = true
             }
+            print("Recnum: \(cellPlant.recnum), Favourite:\(self!.favouritedPlants[cellPlant.recnum]!)")
         }
         
         let imageFileName = imageList?.images.first(where: { $0.recnum == cellPlant.recnum })?.img_file_name ?? ""
@@ -339,6 +343,12 @@ class ViewController: UIViewController, UITableViewDelegate,
                             self.populateBedToPlantDict()
                             self.addBedsToMap(bedArray: self.bedArray)
                             
+                            
+                            for plant in self.alivePlants {
+                                self.favouritedPlants[plant.recnum] = false
+                            }
+                            self.favouritedPlants["634"] = true
+                            print(self.favouritedPlants.keys.count)
 
                         }
 
