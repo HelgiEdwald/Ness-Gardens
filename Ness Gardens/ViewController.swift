@@ -169,10 +169,9 @@ class ViewController: UIViewController, UITableViewDelegate,
         let cellPlant = plantInSection[indexPath.row]
         cell.thumbnailImageView.image = UIImage(named: "no plant image")
         
-        cell.recnumLabel.text = cellPlant.recnum
-        cell.familyLabel.text = cellPlant.family
-        cell.speciesLabel.text = cellPlant.species
-        
+        cell.familyLabel?.text = cellPlant.family ?? "no family"
+        cell.speciesLabel?.text = cellPlant.species ?? "no species"
+        cell.genusLabel?.text = cellPlant.genus ?? "no genus"
         if UserDefaults.standard.bool(forKey: "\(cellPlant.recnum)") {
             cell.favouriteButton.setImage(UIImage(systemName: "star.fill"), for: .normal)
         } else {

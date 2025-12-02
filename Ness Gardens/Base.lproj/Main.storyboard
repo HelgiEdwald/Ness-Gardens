@@ -34,17 +34,17 @@
                                                     <rect key="frame" x="291" y="1" width="50" height="50"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                 </imageView>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Kc7-Zu-ofn">
-                                                    <rect key="frame" x="165" y="1" width="145" height="21"/>
+                                                <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="j4b-fp-TwY">
+                                                    <rect key="frame" x="212" y="10" width="71" height="32"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="9"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="j4b-fp-TwY">
-                                                    <rect key="frame" x="165" y="30" width="118" height="21"/>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="mRO-Fz-jhZ">
+                                                    <rect key="frame" x="176" y="0.0" width="107" height="51"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                    <fontDescription key="fontDescription" type="italicSystem" pointSize="15"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
@@ -59,10 +59,10 @@
                                                         <action selector="favButtonPressed:" destination="7sB-SU-yQI" eventType="touchUpInside" id="YaV-tc-BDv"/>
                                                     </connections>
                                                 </button>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lO4-wf-ZQk">
-                                                    <rect key="frame" x="115" y="15" width="42" height="21"/>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="Kc7-Zu-ofn">
+                                                    <rect key="frame" x="69" y="0.0" width="102" height="51"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
@@ -71,7 +71,7 @@
                                         <connections>
                                             <outlet property="familyLabel" destination="Kc7-Zu-ofn" id="VJm-nn-hDj"/>
                                             <outlet property="favouriteButton" destination="Y9S-NB-5By" id="5DN-o7-FDR"/>
-                                            <outlet property="recnumLabel" destination="lO4-wf-ZQk" id="e4X-f1-Ris"/>
+                                            <outlet property="genusLabel" destination="mRO-Fz-jhZ" id="Bd9-q8-Ais"/>
                                             <outlet property="speciesLabel" destination="j4b-fp-TwY" id="hFU-WZ-QAk"/>
                                             <outlet property="thumbnailImageView" destination="zPD-ss-4Ih" id="Xxa-JV-ArI"/>
                                         </connections>
@@ -164,9 +164,11 @@
                     </view>
                     <navigationItem key="navigationItem" id="psu-eO-nXp"/>
                     <connections>
+                        <outlet property="nextImageButton" destination="CqY-fB-MXl" id="RMG-gW-kuh"/>
                         <outlet property="plantImageView1" destination="Ake-Hv-WsB" id="D3M-uB-KCl"/>
                         <outlet property="plantMapView" destination="4dX-SG-5aD" id="DG5-FE-4wH"/>
                         <outlet property="plantTextView" destination="e5Z-EI-FM0" id="IbV-Cx-RuB"/>
+                        <outlet property="previousImageButton" destination="hbZ-2W-hkm" id="AYX-3s-MPl"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="xle-az-1hc" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>

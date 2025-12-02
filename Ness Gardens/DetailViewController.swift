@@ -14,7 +14,8 @@ class DetailViewController: UIViewController {
     @IBOutlet weak var plantImageView1: UIImageView!
     @IBOutlet weak var plantMapView: MKMapView!
     @IBOutlet weak var plantTextView: UITextView!
-    
+    @IBOutlet weak var previousImageButton: UIButton!
+    @IBOutlet weak var nextImageButton: UIButton!
     
     //MARK: Variables passed along from main view controller
     var plantReceived: Plant?
@@ -36,11 +37,19 @@ class DetailViewController: UIViewController {
         print("Img list of received plant: \(receivedImageFileNameArray)")
 
         plantTextView.text.append("\n\n")
+        
         if let familyString = plantReceived?.family, !familyString.isEmpty {
             plantTextView.text.append("Family: \(familyString)\n\n")
         }
         else {
             plantTextView.text.append("Family: No family\n\n")
+        }
+        
+        if let genusString = plantReceived?.genus, !genusString.isEmpty {
+            plantTextView.text.append("Genus: \(genusString)\n\n")
+        }
+        else {
+            plantTextView.text.append("Genus: No genus\n\n")
         }
         
         if let speciesString = plantReceived?.species, !speciesString.isEmpty {
@@ -50,20 +59,28 @@ class DetailViewController: UIViewController {
             plantTextView.text.append("Species: No species\n\n")
         }
         
+        
         if let countryString = plantReceived?.country, !countryString.isEmpty {
             plantTextView.text.append("Country: \(countryString)\n\n")
         }
         else {
             plantTextView.text.append("Country: No country\n\n")
         }
-
+        
+        if !receivedImageFileNameArray.isEmpty {
+            let imageFileName = receivedImageFileNameArray[currentImageIndex]
+            
+            let urlString = "https://cgi.csc.liv.ac.uk/~phil/Teaching/COMP228/ness_images/\(imageFileName)"
+            let url = URL(string: urlString)!
+            
+            plantImageView1.load(url:url)
+        }
                 
-        let imageFileName = receivedImageFileNameArray[currentImageIndex]
-        
-        let urlString = "https://cgi.csc.liv.ac.uk/~phil/Teaching/COMP228/ness_images/\(imageFileName)"
-        let url = URL(string: urlString)!
-        
-        plantImageView1.load(url:url)
+        else {
+            plantImageView1.image = UIImage(named: "no plant image")
+            previousImageButton.isUserInteractionEnabled = false
+            nextImageButton.isUserInteractionEnabled = false
+        }
         // Do any additional setup after loading the view.
         
         let span = MKCoordinateSpan(latitudeDelta: 10, longitudeDelta: 10)
