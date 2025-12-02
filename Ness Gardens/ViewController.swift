@@ -43,10 +43,10 @@ class ViewController: UIViewController, UITableViewDelegate,
     //MARK: Variables to pass along to detail view controller
     
     var selectedPlant: Plant?
-    var selectedPlantRecnum: String?
-    var selectedPlantFamily: String?
-    var selectedPlantSpecies: String?
+
     var selectedPlantImage: UIImage?
+    
+    var selectedPlantImageFileName: String?
 
     //MARK: Map and Location
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
@@ -164,6 +164,8 @@ class ViewController: UIViewController, UITableViewDelegate,
 
         selectedPlant = cellPlant
         
+        selectedPlantImageFileName = imageList?.images.first(where: { $0.recnum == selectedPlant?.recnum })?.img_file_name ?? ""
+        
         print("Selected Plant: \(selectedPlant?.recnum ?? "")")
         
         performSegue(withIdentifier: "toDetail", sender: cellPlant)
@@ -177,8 +179,17 @@ class ViewController: UIViewController, UITableViewDelegate,
             
             detailViewController.plantReceived = selectedPlant
             
+            detailViewController.receivedPlantImageFileName = selectedPlantImageFileName
+            
+            
         }
     }
+    
+    @IBAction func unwindToMainView(_ unwindSegue: UIStoryboardSegue) {
+        let sourceViewController = unwindSegue.source
+        // Use data from the view controller which initiated the unwind segue
+    }
+    
     //MARK: Decoding JSON data
     func decodeBedData() {
         

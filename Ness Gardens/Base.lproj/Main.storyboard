@@ -84,7 +84,7 @@
                     <connections>
                         <outlet property="myMap" destination="6d3-x1-CEf" id="GRY-Zz-acQ"/>
                         <outlet property="myTable" destination="1dJ-3Y-WuK" id="Mvv-Dz-WrG"/>
-                        <segue destination="PGd-A3-mHQ" kind="show" identifier="toDetail" id="jT9-52-sLx"/>
+                        <segue destination="PGd-A3-mHQ" kind="presentation" identifier="toDetail" modalPresentationStyle="fullScreen" id="jT9-52-sLx"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
@@ -96,31 +96,48 @@
             <objects>
                 <viewController id="PGd-A3-mHQ" customClass="DetailViewController" customModule="Ness_Gardens" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Zda-H7-AdO">
-                        <rect key="frame" x="0.0" y="0.0" width="402" height="812"/>
+                        <rect key="frame" x="0.0" y="0.0" width="402" height="874"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yPY-c9-2Bs">
-                                <rect key="frame" x="180" y="427" width="42" height="21"/>
+                                <rect key="frame" x="180" y="133" width="42" height="21"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" adjustsImageSizeForAccessibilityContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Ake-Hv-WsB">
+                                <rect key="frame" x="16" y="162" width="370" height="307"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            </imageView>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="VYr-31-RbL">
+                                <rect key="frame" x="17" y="69" width="74" height="22"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                <state key="normal" title="Button" image="chevron.backward.circle" catalog="system"/>
+                                <connections>
+                                    <action selector="backButtonPressed:" destination="PGd-A3-mHQ" eventType="touchUpInside" id="Cwo-Qp-PDm"/>
+                                    <segue destination="1xI-d1-UWQ" kind="unwind" identifier="unwindToMain" unwindAction="unwindToMainView:" id="4RJ-UQ-ETj"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="SHr-sb-SfH"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     </view>
                     <navigationItem key="navigationItem" id="psu-eO-nXp"/>
                     <connections>
+                        <outlet property="plantImageView1" destination="Ake-Hv-WsB" id="D3M-uB-KCl"/>
                         <outlet property="recnumLabel" destination="yPY-c9-2Bs" id="dHt-LV-a7R"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="xle-az-1hc" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+                <exit id="1xI-d1-UWQ" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
-            <point key="canvasLocation" x="866" y="102"/>
+            <point key="canvasLocation" x="865.67164179104475" y="101.60183066361556"/>
         </scene>
     </scenes>
     <resources>
+        <image name="chevron.backward.circle" catalog="system" width="128" height="123"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
