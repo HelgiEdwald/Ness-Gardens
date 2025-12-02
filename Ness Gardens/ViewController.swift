@@ -149,20 +149,17 @@ class ViewController: UIViewController, UITableViewDelegate,
         cell.recnumLabel.text = cellPlant.recnum
         cell.familyLabel.text = cellPlant.family
         cell.speciesLabel.text = cellPlant.species
+        cell.favouriteButton.setImage(UIImage(systemName: "star"), for: .normal)
         
-        if favouritedPlants[cellPlant.recnum] == true{
-            cell.favouriteButton.setImage(UIImage(systemName: "star.fill"), for: .normal)
-        } else {
-            cell.favouriteButton.setImage(UIImage(systemName: "star"), for: .normal)
-        }
         cell.favButtonPressed = { [ weak self ] in
-            if self!.favouritedPlants[cellPlant.recnum] == true {
-                self!.favouritedPlants[cellPlant.recnum] = false
+            if cell.favouriteButton.currentImage == UIImage(systemName: "star") {
                 cell.favouriteButton.setImage(UIImage(systemName: "star.fill"), for: .normal)
             }
-            else {
-                self!.favouritedPlants[cellPlant.recnum] = true
+            else if cell.favouriteButton.currentImage == UIImage(systemName: "star.fill") {
                 cell.favouriteButton.setImage(UIImage(systemName: "star"), for: .normal)
+            }
+            else {
+                cell.favouriteButton.setImage(UIImage(systemName: "eraser"), for: .normal)
             }
         }
         
