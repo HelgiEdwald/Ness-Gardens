@@ -25,11 +25,12 @@ class DetailViewController: UIViewController {
     //set image index to first element
     var currentImageIndex = 0
 
-    //unwind to main view controller if back button pressed
+    //MARK: unwind to main view controller if back button pressed
     @IBAction func backButtonPressed(_ sender: Any) {
         performSegue(withIdentifier: "unwindToMain", sender: nil)
     }
     
+    //MARK: disable and hide buttons
     func disableAndHideButtons() {
         
         previousImageButton.isUserInteractionEnabled = false
@@ -44,35 +45,38 @@ class DetailViewController: UIViewController {
 
         plantTextView.text.append("\n\n")
         
-        if let familyString = plantReceived?.family, !familyString.isEmpty {
+        //display text information in text view
+        if let familyString = plantReceived?.family, plantReceived?.family != ""{
             plantTextView.text.append("Family: \(familyString)\n\n")
         }
-        else {
-            plantTextView.text.append("Family: No family\n\n")
-        }
         
-        if let genusString = plantReceived?.genus, !genusString.isEmpty {
+        if let genusString = plantReceived?.genus, plantReceived?.genus != "" {
             plantTextView.text.append("Genus: \(genusString)\n\n")
         }
-        else {
-            plantTextView.text.append("Genus: No genus\n\n")
-        }
         
-        if let speciesString = plantReceived?.species, !speciesString.isEmpty {
+        if let speciesString = plantReceived?.species, plantReceived?.species != "" {
             plantTextView.text.append("Species: \(speciesString)\n\n")
         }
-        else {
-            plantTextView.text.append("Species: No species\n\n")
-        }
         
-        
-        if let countryString = plantReceived?.country, !countryString.isEmpty {
+        if let countryString = plantReceived?.country, plantReceived?.country != "" {
             plantTextView.text.append("Country: \(countryString)\n\n")
         }
-        else {
-            plantTextView.text.append("Country: No country\n\n")
+        
+        if let epithetString = plantReceived?.infraspecificEpithet, plantReceived?.infraspecificEpithet != "" {
+            plantTextView.text.append("Epithet: \(epithetString)\n\n")
         }
         
+        if let vernacularString = plantReceived?.vernacularName, plantReceived?.vernacularName != "" {
+            plantTextView.text.append("Epithet: \(vernacularString)\n\n")
+        }
+        
+        if let donorString = plantReceived?.donor, plantReceived?.donor != "" {
+            plantTextView.text.append("Epithet: \(donorString)\n\n")
+        }
+        
+        if let memoriamString = plantReceived?.memoriam, plantReceived?.memoriam != "" {
+            plantTextView.text.append("Memoriam: \(memoriamString)")
+        }
         
         //display images if image file name array has elements in it
         if !receivedImageFileNameArray.isEmpty {
@@ -92,7 +96,6 @@ class DetailViewController: UIViewController {
         else {
             
             plantImageView1.image = UIImage(named: "no plant image")
-            
             disableAndHideButtons()
             
         }
@@ -109,7 +112,6 @@ class DetailViewController: UIViewController {
             )
             let annotation = MKPointAnnotation()
             annotation.coordinate = coordinate
-            
             plantMapView.addAnnotation(annotation)
             
             let region = MKCoordinateRegion(center: coordinate, span: span)
