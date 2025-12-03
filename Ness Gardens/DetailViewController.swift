@@ -22,18 +22,25 @@ class DetailViewController: UIViewController {
     var selectedPlantImage: UIImage?
     var receivedImageFileNameArray: [String] = []
     
-    
+    //set image index to first element
     var currentImageIndex = 0
 
-
+    //unwind to main view controller if back button pressed
     @IBAction func backButtonPressed(_ sender: Any) {
         performSegue(withIdentifier: "unwindToMain", sender: nil)
     }
+    
+    func disableAndHideButtons() {
+        
+        previousImageButton.isUserInteractionEnabled = false
+        nextImageButton.isUserInteractionEnabled = false
+        previousImageButton.isHidden = true
+        nextImageButton.isHidden = true
+        
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        print("Detail received: \(plantReceived?.recnum ?? "No recnum")")
-        print("Img list of received plant: \(receivedImageFileNameArray)")
 
         plantTextView.text.append("\n\n")
         
@@ -66,25 +73,33 @@ class DetailViewController: UIViewController {
             plantTextView.text.append("Country: No country\n\n")
         }
         
+        
+        //display images if image file name array has elements in it
         if !receivedImageFileNameArray.isEmpty {
-            let imageFileName = receivedImageFileNameArray[currentImageIndex]
             
+            let imageFileName = receivedImageFileNameArray[currentImageIndex]
             let urlString = "https://cgi.csc.liv.ac.uk/~phil/Teaching/COMP228/ness_images/\(imageFileName)"
             let url = URL(string: urlString)!
-            
             plantImageView1.load(url:url)
+            
+            //disable and hide buttons if there is only 1 image file name
+            if receivedImageFileNameArray.count == 1 {
+                disableAndHideButtons()
+            }
         }
-                
+        
+        //show question mark image if there are no elements in image file name array and disable/hide buttons
         else {
+            
             plantImageView1.image = UIImage(named: "no plant image")
-            previousImageButton.isUserInteractionEnabled = false
-            nextImageButton.isUserInteractionEnabled = false
+            
+            disableAndHideButtons()
+            
         }
-        // Do any additional setup after loading the view.
-        
-        let span = MKCoordinateSpan(latitudeDelta: 10, longitudeDelta: 10)
-        
+
+        //show map view with annotation if received plant has non-nil latitude
         if let lat = plantReceived?.latitude, !lat.isEmpty {
+            let span = MKCoordinateSpan(latitudeDelta: 10, longitudeDelta: 10)
             guard let lon = plantReceived?.longitude else { return }
             guard let latitude = Double(lat) else { return }
             guard let longitude = Double(lon) else { return }
@@ -108,6 +123,7 @@ class DetailViewController: UIViewController {
     
     @IBAction func previousImageButtonTapped(_ sender: Any) {
         
+        //decrement array index, set to length of array minus one if index is equal to 0
         if currentImageIndex != 0 {
             currentImageIndex = currentImageIndex - 1
         } else {
@@ -115,11 +131,6 @@ class DetailViewController: UIViewController {
         }
         
         let imageFileName = receivedImageFileNameArray[currentImageIndex]
-        
-       
-        print("currentImageIndex: \(currentImageIndex)")
-        print(receivedImageFileNameArray.count - 1)
-        
         
         if let url = URL(string: "https://cgi.csc.liv.ac.uk/~phil/Teaching/COMP228/ness_images/\(imageFileName)") {
             
@@ -152,6 +163,8 @@ class DetailViewController: UIViewController {
     }
     
     @IBAction func nextImageButtonTapped(_ sender: Any) {
+        
+        //increment array index, set to 0 if index is equal to length of array minus one
         if currentImageIndex != (receivedImageFileNameArray.count - 1) {
             currentImageIndex = currentImageIndex + 1
         } else {
@@ -159,11 +172,6 @@ class DetailViewController: UIViewController {
         }
         
         let imageFileName = receivedImageFileNameArray[currentImageIndex]
-        
-       
-        print("currentImageIndex: \(currentImageIndex)")
-        print(receivedImageFileNameArray.count - 1)
-        
         
         if let url = URL(string: "https://cgi.csc.liv.ac.uk/~phil/Teaching/COMP228/ness_images/\(imageFileName)") {
             
@@ -194,15 +202,4 @@ class DetailViewController: UIViewController {
         }
     }
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
 }
