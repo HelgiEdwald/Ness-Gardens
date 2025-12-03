@@ -20,7 +20,6 @@ class DetailViewController: UIViewController {
     //MARK: Variables passed along from main view controller
     var plantReceived: Plant?
     var selectedPlantImage: UIImage?
-    var receivedPlantImageFileName: String?
     var receivedImageFileNameArray: [String] = []
     
     

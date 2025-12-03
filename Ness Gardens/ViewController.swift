@@ -17,40 +17,31 @@ class ViewController: UIViewController, UITableViewDelegate,
     @IBOutlet weak var myMap: MKMapView!
 
     //MARK: Variables
+    //user location
     var locationManager = CLLocationManager()
     var firstRun = true
     var startTrackingTheUser = false
     var userLocation = CLLocationCoordinate2D(latitude: 0.0, longitude: 0.0)
     
+    //variables to populate with decoded json data
     var plantList: plantRecords? = nil
     var allPlants: [Plant] = []
     var alivePlants: [Plant] = []
     var imageList: imageRecords? = nil
     var bedList: bedRecords? = nil
     var bedArray: [Bed] = []
-    
+    var bedIdArray: [String] = []
+    var bedToPlantDict: [String: [Plant]] = [:]
+
+    //Booleans to check if JSON data has been decoded
     var bedsDecoded = false
     var plantsDecoded = false
     var imagesDecoded = true
-
-    var plantDict: [String: String] = [:]
-    var imageDict: [String: UIImage] = [:]
-    var bedDict: [String: [String]] = [:]
-    var favouritedPlants: [String: Bool] = [:]
     
-    
-    var bedIdArray: [String] = []
-
-    var bedToPlantDict: [String: [Plant]] = [:]
-    
-    //MARK: Variables to pass along to detail view controller
-    
+    //Variables to pass along to detail view controller
     var selectedPlant: Plant?
-
     var selectedPlantImage: UIImage?
-    
     var selectedPlantImageFileName: String?
-    
     var selectedImageFileNameArray: [String] = []
 
     //MARK: Map and Location
@@ -97,11 +88,11 @@ class ViewController: UIViewController, UITableViewDelegate,
         
         DispatchQueue.main.async {
             
+            //create a new bed array that is sorted by proximity to user
             let newSortedBedArray = self.sortBedArrayByProximity(arrayOfBeds: self.bedArray, userLatitude: latitude, userLongitude: longitude)
-            
             var newBedIdArray: [String] = []
         
-            
+            //add bed id strings from elements from sorted bed arrray to new bedidarray to ensure no empty beds are in new array
             for bed in newSortedBedArray {
                 if self.bedToPlantDict[bed.bed_id] != nil {
                     newBedIdArray.append(bed.bed_id)
@@ -110,8 +101,10 @@ class ViewController: UIViewController, UITableViewDelegate,
             }
             
             self.bedIdArray = newBedIdArray
-            self.myTable.reloadData()
             
+            if self.bedsDecoded && self.plantsDecoded && self.imagesDecoded {
+                self.updateTheTable()
+            }
         }
 
     }
@@ -125,6 +118,7 @@ class ViewController: UIViewController, UITableViewDelegate,
     //MARK: Table View
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
+        //set number of rows in each section to strings in values of bed to plant dictionary
         let currentBedId = bedIdArray[section]
         return bedToPlantDict[currentBedId]?.count ?? 0
         
@@ -139,6 +133,7 @@ class ViewController: UIViewController, UITableViewDelegate,
     // Create a standard header that includes the returned text.
     func tableView(_ tableView: UITableView, titleForHeaderInSection
                                 section: Int) -> String? {
+        //display name of bed in header
         let bedNameString = bedList?.beds.first(where: {$0.bed_id == bedIdArray[section]})?.name ?? "no name"
         
         return "Bed: \(bedNameString)"
@@ -147,6 +142,7 @@ class ViewController: UIViewController, UITableViewDelegate,
     // Create a standard footer that includes the returned text.
     func tableView(_ tableView: UITableView, titleForFooterInSection
                                 section: Int) -> String? {
+        //display name of bed in footer
         let bedNameString = bedList?.beds.first(where: {$0.bed_id == bedIdArray[section]})?.name ?? "no name"
         
         return "Bed: \(bedNameString)"
@@ -155,11 +151,10 @@ class ViewController: UIViewController, UITableViewDelegate,
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        
-        
+        //cast to cell to custom tableview cell
         let cell = tableView.dequeueReusableCell(withIdentifier: "myCell", for: indexPath) as! NessGardensTableViewCell
-       
         
+        //get bed id with current section as index, get plants in that section, display all plants in that section as rows
         let currentBedId = bedIdArray[indexPath.section]
         
         guard let plantInSection = bedToPlantDict[currentBedId] else {
@@ -167,17 +162,23 @@ class ViewController: UIViewController, UITableViewDelegate,
         }
         
         let cellPlant = plantInSection[indexPath.row]
+        
+        //set thumbnail image to question mark initially to prevent reuse of image and flickering caused by user location changing
         cell.thumbnailImageView.image = UIImage(named: "no plant image")
         
+        //display initial plant information
         cell.familyLabel?.text = cellPlant.family ?? "no family"
         cell.speciesLabel?.text = cellPlant.species ?? "no species"
         cell.genusLabel?.text = cellPlant.genus ?? "no genus"
+        
+        //set filled star as image of button for favourited plants, empty star for non-favourited plants
         if UserDefaults.standard.bool(forKey: "\(cellPlant.recnum)") {
             cell.favouriteButton.setImage(UIImage(systemName: "star.fill"), for: .normal)
         } else {
             cell.favouriteButton.setImage(UIImage(systemName: "star"), for: .normal)
         }
         
+        //when button of custom table view cell is pressed, change favorite boolean in userdefaults for that plant's recnum
         cell.favButtonPressed = { [ weak self ] in
             if UserDefaults.standard.bool(forKey: "\(cellPlant.recnum)"){
                 cell.favouriteButton.setImage(UIImage(systemName: "star"), for: .normal)
@@ -189,11 +190,10 @@ class ViewController: UIViewController, UITableViewDelegate,
             }
         }
         
+        //set thumbnail image to image loaded from url with the cellplant's image file name found in the decoded image data
         let imageFileName = imageList?.images.first(where: { $0.recnum == cellPlant.recnum })?.img_file_name ?? ""
-        
         let urlString = "https://cgi.csc.liv.ac.uk/~phil/Teaching/COMP228/ness_thumbnails/\(imageFileName)"
         let url = URL(string: urlString)!
-        
         cell.thumbnailImageView.load(url:url)
         
         return cell
@@ -201,16 +201,16 @@ class ViewController: UIViewController, UITableViewDelegate,
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        
+        //get values from selected row
         let currentBedId = bedIdArray[indexPath.section]
         let plantInSection = bedToPlantDict[currentBedId]
         let cellPlant = plantInSection?[indexPath.row]
-
+        
+        //set empty variables to selected plant's structure and image file names
         selectedPlant = cellPlant
+        selectedImageFileNameArray = imageList?.images.filter({$0.recnum == selectedPlant?.recnum}).map(\.img_file_name) ?? []
         
-        selectedPlantImageFileName = imageList?.images.first(where: { $0.recnum == selectedPlant?.recnum })?.img_file_name ?? ""
-        
-        print("Selected Plant: \(selectedPlant?.recnum ?? "")")
+        print("Img list of selected plant: \(selectedImageFileNameArray)")
         
         performSegue(withIdentifier: "toDetail", sender: cellPlant)
         
@@ -220,16 +220,10 @@ class ViewController: UIViewController, UITableViewDelegate,
         if segue.identifier == "toDetail" {
             
             let detailViewController = segue.destination as! DetailViewController
-                        
-            selectedImageFileNameArray = imageList?.images.filter({$0.recnum == selectedPlant?.recnum}).map(\.img_file_name) ?? []
             
-            print("Img list of selected plant: \(selectedImageFileNameArray)")
-            
+            //pass data from main view controller to detail view controller
             detailViewController.receivedImageFileNameArray = selectedImageFileNameArray
-            
             detailViewController.plantReceived = selectedPlant
-            
-            detailViewController.receivedPlantImageFileName = selectedPlantImageFileName
             
             
         }
@@ -262,16 +256,10 @@ class ViewController: UIViewController, UITableViewDelegate,
                     self.bedList = bedData
                     
                     self.bedsDecoded = true
-                    print(
-                        "B",
-                        self.bedsDecoded,
-                        "P",
-                        self.plantsDecoded,
-                        "I",
-                        self.imagesDecoded
-                    )
+                    
                     DispatchQueue.main.async {
                         
+                        //keep decoded data, add beds to bed array and their bed_id properties to string array
                         if let list = self.bedList {
                             for bed in list.beds {
                                 if self.bedArray.isEmpty {
@@ -324,23 +312,15 @@ class ViewController: UIViewController, UITableViewDelegate,
                     
                     self.plantList = plantData
                     self.plantsDecoded = true
-                    print(
-                        "B",
-                        self.bedsDecoded,
-                        "P",
-                        self.plantsDecoded,
-                        "I",
-                        self.imagesDecoded
-                    )
 
                     DispatchQueue.main.async {
 
                         if let list = self.plantList {
+                            
                             self.filterOutDeadPlants(list: list)
                             self.populateBedToPlantDict()
                             self.addBedsToMap(bedArray: self.bedArray)
                             
-
                         }
 
                         self.updateTheTable()
@@ -360,7 +340,9 @@ class ViewController: UIViewController, UITableViewDelegate,
 
     }
     
+    //MARK: function to add plants to total array and to filtered array if they are still present and alive in Ness Gardens
     func filterOutDeadPlants(list: plantRecords) {
+        
         for plant in list.plants {
             if self.allPlants.isEmpty {
                 self.allPlants.insert(plant, at: 0)
@@ -379,6 +361,7 @@ class ViewController: UIViewController, UITableViewDelegate,
         }
     }
     
+    //MARK: function to populate a dictionary used for the table view so where beds are mapped to all the plants in that bed
     func populateBedToPlantDict() {
         
         for aPlant in self.alivePlants {
@@ -408,7 +391,7 @@ class ViewController: UIViewController, UITableViewDelegate,
             
             //create a URL session running on a background thread
             let session = URLSession.shared
-
+            
             //create a data task supplied with the URL returning a tuple of the data we want, a response code from the data server, and any error message
             session.dataTask(with: url) { (data, response, err) in
                 //try to get at data
@@ -423,24 +406,14 @@ class ViewController: UIViewController, UITableViewDelegate,
                         from: jsonData
                     )
                     self.imageList = imageData
-
                     self.imagesDecoded = true
-                    print(
-                        "B",
-                        self.bedsDecoded,
-                        "P",
-                        self.plantsDecoded,
-                        "I",
-                        self.imagesDecoded
-                    )
-                    if self.bedsDecoded && self.plantsDecoded
-                        && self.imagesDecoded
-                    {
+                    
+                    if self.bedsDecoded && self.plantsDecoded && self.imagesDecoded {
                         DispatchQueue.main.async {
                             self.updateTheTable()
                         }
                     }
-
+                    
                     
                 }
                 
@@ -453,42 +426,16 @@ class ViewController: UIViewController, UITableViewDelegate,
         }
     }
 
-    func retrieveImageData(imageFileName: String) {
-        //set up the URL
-        if let url = URL(string: "https://cgi.csc.liv.ac.uk/~phil/Teaching/COMP228/ness_thumbnails/\(imageFileName)") {
-            
-            //create a URL session running on a background thread
-            let session = URLSession.shared
-
-            //create a data task supplied with the URL returning a tuple of the data we want, a response code from the data server, and any error message
-            session.dataTask(with: url) { (data, response, err) in
-                //try to get at data
-                guard let imageData = data else {
-                    return
-                }
-
-                //decode data if accessed ok
-                do {
-                    let imageRetrieved = UIImage(data: imageData)
-                    self.imageDict[imageFileName] = imageRetrieved
-
-                    DispatchQueue.main.async {
-                        self.updateTheTable()
-                    }
-
-                }
-            }.resume()
-            print("You are here!")
-        }
-    }
-
     func updateTheTable() {
         myTable.reloadData()
     }
 
+    //MARK: function to add bed locations to map as annotations
     func addBedsToMap(bedArray: [Bed]) {
-   print("in function")
+
         for bed in bedArray {
+            
+            //filter out beds with no plants
             if bedToPlantDict[bed.bed_id] != nil {
                 let coordinate = CLLocationCoordinate2D(latitude: Double(bed.latitude)! , longitude: Double(bed.longitude)!)
                 let annotation = MKPointAnnotation()
@@ -498,10 +445,12 @@ class ViewController: UIViewController, UITableViewDelegate,
             }
             
         }
+        
     }
     
     func sortBedArrayByProximity(arrayOfBeds: [Bed], userLatitude: CLLocationDegrees, userLongitude: CLLocationDegrees) -> Array<Bed>{
         
+        //new array where parametered array is sorted by distance to parametered user location
         let sortedBedArray = arrayOfBeds.sorted { (bed1, bed2) -> Bool in
             
             let bed1location = CLLocation(latitude: Double(bed1.latitude)!, longitude: Double(bed1.longitude)!)
@@ -542,11 +491,11 @@ class ViewController: UIViewController, UITableViewDelegate,
         //configure the map to show the user's location (with a blue dot).
         myMap.showsUserLocation = true
 
+        //decode JSON data
         decodeBedData()
-
         decodePlantData()
-
         decodeImageData()
+        
 
     }
 }
