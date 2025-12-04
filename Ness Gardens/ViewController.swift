@@ -11,7 +11,7 @@ import UIKit
 class ViewController: UIViewController, UITableViewDelegate,
     UITableViewDataSource, MKMapViewDelegate, CLLocationManagerDelegate
 {
-
+    
     //MARK: Initialising Variables
     
     //outlets
@@ -37,11 +37,11 @@ class ViewController: UIViewController, UITableViewDelegate,
     var bedIdArray: [String] = []
     var bedToPlantDict: [String: [Plant]] = [:]
     var trailIdToLocationsDict: [String: [trailLocatation]] = [:]
-
+    
     var trailArray: [Trail] = []
     var trailLocationArray: [trailLocatation] = []
     
-    var trailCoordinates: [CLLocation] = []
+    var trailCoordinateDict: [String:[CLLocationCoordinate2D]] = [:]
     
     //Booleans to check if JSON data has been decoded
     var bedsDecoded = false
@@ -250,13 +250,28 @@ class ViewController: UIViewController, UITableViewDelegate,
         let trailIndex = sender.selectedSegmentIndex - 1
         
         if trailIndex >= 0 {
-            let trailSelected = trailArray[trailIndex].Trail_Name
-            let trailSelectedId = trailArray[trailIndex].ID
-            print("Trail Selected: \(trailSelected)")
-            print("ID of selected trail: \(trailSelectedId)")
+            drawTrail(coordinateArray: trailCoordinateDict[trailArray[trailIndex].ID]!)
             
         }
+        else {
+            myMap.removeOverlays(myMap.overlays)
+        }
         
+    }
+    
+    func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
+        
+        switch overlay {
+        case let polyline as MKPolyline:
+            
+            let renderer = MKPolylineRenderer(polyline: polyline)
+            renderer.strokeColor = .blue
+            renderer.lineWidth = 3
+            return renderer
+            
+        default:
+            fatalError("Unexpected MKOverlay type")
+        }
     }
     
     
@@ -456,7 +471,7 @@ class ViewController: UIViewController, UITableViewDelegate,
         }
 
     }
-    
+
     func decodeTrailLocationData() {
         
         //set up the URL
@@ -477,15 +492,26 @@ class ViewController: UIViewController, UITableViewDelegate,
                     let trailLocationData = try decoder.decode(trailLocatationRecords.self, from: jsonData)
                     
                     self.trailLocationList = trailLocationData
-                    self.trailsDecoded = true
+                    
 
                     DispatchQueue.main.async {
 
                         if let list = self.trailLocationList {
+                          
                             
                             for trail_location in list.trail_locations {
-                                self.trailLocationArray.append(trail_location)
+                                if self.trailCoordinateDict[trail_location.Trail_ID] == nil {
+                                    self.trailCoordinateDict[trail_location.Trail_ID] = [CLLocationCoordinate2D(latitude: Double(trail_location.Latitude)!, longitude: Double(trail_location.Longitude)!)]
+                                } else {
+                                    self.trailCoordinateDict[trail_location.Trail_ID]!.append(CLLocationCoordinate2D(latitude: Double(trail_location.Latitude)!, longitude: Double(trail_location.Longitude)!))
+                                }
+                                
+                                
+                                
                             }
+                            print(self.trailCoordinateDict)
+                            self.trailLocationsDecoded = true
+                            self.mySegmentedControl.isEnabled = true
                             
                         }
 
@@ -595,13 +621,19 @@ class ViewController: UIViewController, UITableViewDelegate,
         }
     
     //function to draw trail
-    func drawTrail() {
-        
+    func drawTrail(coordinateArray: [CLLocationCoordinate2D]) {
+        myMap.removeOverlays(myMap.overlays)
+        let polyline = MKPolyline(coordinates: coordinateArray, count: coordinateArray.count)
+        print("polyline", polyline)
+        print("arrayLength: ", coordinateArray.count)
+        myMap.addOverlay(polyline)
     }
     
     //MARK: View related stuff
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        mySegmentedControl.isEnabled = false
         // Do any additional setup after loading the view.
 
         // Make this view controller a delegate of the Location Manager, so that it
