@@ -36,6 +36,7 @@ class ViewController: UIViewController, UITableViewDelegate,
     var bedArray: [Bed] = []
     var bedIdArray: [String] = []
     var bedToPlantDict: [String: [Plant]] = [:]
+    var trailIdToLocationsDict: [String: [trailLocatation]] = [:]
 
     var trailArray: [Trail] = []
     var trailLocationArray: [trailLocatation] = []
@@ -245,18 +246,17 @@ class ViewController: UIViewController, UITableViewDelegate,
     
     
     @IBAction func trailDidChange(_ sender: UISegmentedControl) {
-        switch sender.selectedSegmentIndex {
-        case 0:
-            print("No trail selected")
-        case 1:
-            print("Visitor trail selected")
-        case 2:
-            print("Tree trail selected")
-        case 3:
-            print("Easy Access trail selected")
-        default:
-            print("Something weird")
+               
+        let trailIndex = sender.selectedSegmentIndex - 1
+        
+        if trailIndex >= 0 {
+            let trailSelected = trailArray[trailIndex].Trail_Name
+            let trailSelectedId = trailArray[trailIndex].ID
+            print("Trail Selected: \(trailSelected)")
+            print("ID of selected trail: \(trailSelectedId)")
+            
         }
+        
     }
     
     
@@ -432,6 +432,11 @@ class ViewController: UIViewController, UITableViewDelegate,
 
                         if let list = self.trailList {
                             
+                            for trail in list.trails {
+                                
+                                self.trailArray.append(trail)
+                                
+                            }
                             
                             
                         }
@@ -478,6 +483,9 @@ class ViewController: UIViewController, UITableViewDelegate,
 
                         if let list = self.trailLocationList {
                             
+                            for trail_location in list.trail_locations {
+                                self.trailLocationArray.append(trail_location)
+                            }
                             
                         }
 
