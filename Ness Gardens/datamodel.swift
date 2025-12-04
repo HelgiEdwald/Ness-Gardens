@@ -65,7 +65,7 @@ struct Bed: Decodable {
 
 nonisolated
 struct trailLocatationRecords: Decodable {
-    let trailLocations: [trailLocatation]
+    let trail_locations: [trailLocatation]
 }
 
 nonisolated

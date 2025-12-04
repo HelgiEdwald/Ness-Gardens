@@ -29,6 +29,8 @@ class ViewController: UIViewController, UITableViewDelegate,
     var alivePlants: [Plant] = []
     var imageList: imageRecords? = nil
     var bedList: bedRecords? = nil
+    var trailList: trailRecords? = nil
+    var trailLocationList: trailLocatationRecords? = nil
     var bedArray: [Bed] = []
     var bedIdArray: [String] = []
     var bedToPlantDict: [String: [Plant]] = [:]
@@ -37,6 +39,8 @@ class ViewController: UIViewController, UITableViewDelegate,
     var bedsDecoded = false
     var plantsDecoded = false
     var imagesDecoded = true
+    var trailsDecoded = false
+    var trailLocationsDecoded = false
     
     //Variables to pass along to detail view controller
     var selectedPlant: Plant?
@@ -326,7 +330,6 @@ class ViewController: UIViewController, UITableViewDelegate,
                         self.updateTheTable()
 
                     }
-                    print("processing completed")
 
                 }
                 
@@ -338,6 +341,138 @@ class ViewController: UIViewController, UITableViewDelegate,
             print("decoding plant data")
         }
 
+    }
+    func decodeImageData() {
+        //set up the URL
+        if let url = URL(string: "https://cgi.csc.liv.ac.uk/~phil/Teaching/COMP228/ness/data.php?class=images") {
+            
+            //create a URL session running on a background thread
+            let session = URLSession.shared
+            
+            //create a data task supplied with the URL returning a tuple of the data we want, a response code from the data server, and any error message
+            session.dataTask(with: url) { (data, response, err) in
+                //try to get at data
+                guard let jsonData = data else {
+                    return
+                }
+                //decode data if accessed ok
+                do {
+                    let decoder = JSONDecoder()
+                    let imageData = try decoder.decode(
+                        imageRecords.self,
+                        from: jsonData
+                    )
+                    self.imageList = imageData
+                    self.imagesDecoded = true
+                    
+                    if self.bedsDecoded && self.plantsDecoded && self.imagesDecoded {
+                        DispatchQueue.main.async {
+                            self.updateTheTable()
+                        }
+                    }
+                    
+                    
+                }
+                
+                //catch error when data does not match structure
+                catch let jsonErr {
+                    print("Error decoding JSON", jsonErr)
+                }
+            }.resume()
+            print("decoding image data")
+        }
+    }
+    
+    func decodeTrailData() {
+        
+        //set up the URL
+        if let url = URL(string: "https://cgi.csc.liv.ac.uk/~phil/Teaching/COMP228/ness/data.php?class=trails") {
+            
+            //create a URL session running on a background thread
+            let session = URLSession.shared
+
+            //create a data task supplied with the URL returning a tuple of the data we want, a response code from the data server, and any error message
+            session.dataTask(with: url) { (data, response, err) in
+                //try to get at data
+                guard let jsonData = data else {
+                    return
+                }
+                //decode data if accessed ok
+                do {
+                    let decoder = JSONDecoder()
+                    let trailData = try decoder.decode(trailRecords.self, from: jsonData)
+                    
+                    self.trailList = trailData
+                    self.trailLocationsDecoded = true
+
+                    DispatchQueue.main.async {
+
+                        if let list = self.trailList {
+                            
+                            
+                            
+                        }
+
+                        self.updateTheTable()
+
+                    }
+
+                }
+                
+                //catch error when data does not match structure
+                catch let jsonErr {
+                    print("Error decoding JSON", jsonErr)
+                }
+            }.resume()
+            print("decoding trail data")
+        }
+
+    }
+    
+    func decodeTrailLocationData() {
+        
+        //set up the URL
+        if let url = URL(string: "https://cgi.csc.liv.ac.uk/~phil/Teaching/COMP228/ness/data.php?class=trail_locations") {
+            
+            //create a URL session running on a background thread
+            let session = URLSession.shared
+
+            //create a data task supplied with the URL returning a tuple of the data we want, a response code from the data server, and any error message
+            session.dataTask(with: url) { (data, response, err) in
+                //try to get at data
+                guard let jsonData = data else {
+                    return
+                }
+                //decode data if accessed ok
+                do {
+                    let decoder = JSONDecoder()
+                    let trailLocationData = try decoder.decode(trailLocatationRecords.self, from: jsonData)
+                    
+                    self.trailLocationList = trailLocationData
+                    self.trailsDecoded = true
+
+                    DispatchQueue.main.async {
+
+                        if let list = self.trailLocationList {
+                            
+                            
+                            
+                        }
+
+                        self.updateTheTable()
+
+                    }
+
+                }
+                
+                //catch error when data does not match structure
+                catch let jsonErr {
+                    print("Error decoding JSON", jsonErr)
+                }
+            }.resume()
+            print("decoding trail location data")
+        }
+        
     }
     
     //MARK: function to add plants to total array and to filtered array if they are still present and alive in Ness Gardens
@@ -385,47 +520,8 @@ class ViewController: UIViewController, UITableViewDelegate,
         
     }
 
-    func decodeImageData() {
-        //set up the URL
-        if let url = URL(string: "https://cgi.csc.liv.ac.uk/~phil/Teaching/COMP228/ness/data.php?class=images") {
-            
-            //create a URL session running on a background thread
-            let session = URLSession.shared
-            
-            //create a data task supplied with the URL returning a tuple of the data we want, a response code from the data server, and any error message
-            session.dataTask(with: url) { (data, response, err) in
-                //try to get at data
-                guard let jsonData = data else {
-                    return
-                }
-                //decode data if accessed ok
-                do {
-                    let decoder = JSONDecoder()
-                    let imageData = try decoder.decode(
-                        imageRecords.self,
-                        from: jsonData
-                    )
-                    self.imageList = imageData
-                    self.imagesDecoded = true
-                    
-                    if self.bedsDecoded && self.plantsDecoded && self.imagesDecoded {
-                        DispatchQueue.main.async {
-                            self.updateTheTable()
-                        }
-                    }
-                    
-                    
-                }
-                
-                //catch error when data does not match structure
-                catch let jsonErr {
-                    print("Error decoding JSON", jsonErr)
-                }
-            }.resume()
-            print("decoding image data")
-        }
-    }
 
+    
     func updateTheTable() {
         myTable.reloadData()
     }
@@ -448,6 +544,7 @@ class ViewController: UIViewController, UITableViewDelegate,
         
     }
     
+    //MARK: function to sort a bed array by proximity to a locataion
     func sortBedArrayByProximity(arrayOfBeds: [Bed], userLatitude: CLLocationDegrees, userLongitude: CLLocationDegrees) -> Array<Bed>{
         
         //new array where parametered array is sorted by distance to parametered user location
@@ -495,6 +592,8 @@ class ViewController: UIViewController, UITableViewDelegate,
         decodeBedData()
         decodePlantData()
         decodeImageData()
+        decodeTrailData()
+        decodeTrailLocationData()
         
 
     }
