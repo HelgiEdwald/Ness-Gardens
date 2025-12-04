@@ -254,8 +254,29 @@ class ViewController: UIViewController, UITableViewDelegate,
     }
     
     @IBAction func questionMarkButtonTapped(_ sender: Any) {
-        let alert = UIAlertController(title: "Trail Information", message: "Here you can view informationn about trails", preferredStyle: .actionSheet)
-        alert.addTextField()
+        let alertMessage = """
+        \(trailArray[0].Trail_Name)
+
+        Description: \(trailArray[0].Description)
+        Duration: \(trailArray[0].Duration)
+        Difficulty: \(trailArray[0].Difficulty)
+        Distance: \(trailArray[0].Distance)
+        
+        \(trailArray[1].Trail_Name)
+        
+        Description: \(trailArray[1].Description)
+        Duration: \(trailArray[1].Duration)
+        Difficulty: \(trailArray[1].Difficulty)
+        Distance: \(trailArray[1].Distance)
+        
+        \(trailArray[2].Trail_Name)
+        
+        Description: \(trailArray[2].Description)
+        Duration: \(trailArray[2].Duration)
+        Difficulty: \(trailArray[2].Difficulty)
+        Distance: \(trailArray[2].Distance)
+        """
+        let alert = UIAlertController(title: "Trail Information", message: alertMessage, preferredStyle: .actionSheet)
         alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: "Default action"), style: .default, handler: { _ in
         NSLog("The \"OK\" alert occured.")
         }))
