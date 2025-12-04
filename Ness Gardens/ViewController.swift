@@ -70,8 +70,8 @@ class ViewController: UIViewController, UITableViewDelegate,
         if firstRun {
             firstRun = false
 
-            let latDelta: CLLocationDegrees = 0.0005
-            let lonDelta: CLLocationDegrees = 0.0005
+            let latDelta: CLLocationDegrees = 0.0020
+            let lonDelta: CLLocationDegrees = 0.0020
 
             //a span defines how large an area is depicted on the map.
             let span = MKCoordinateSpan(latitudeDelta: latDelta, longitudeDelta: lonDelta)
@@ -146,18 +146,27 @@ class ViewController: UIViewController, UITableViewDelegate,
     func tableView(_ tableView: UITableView, titleForHeaderInSection
                                 section: Int) -> String? {
         //display name of bed in header
-        let bedNameString = bedList?.beds.first(where: {$0.bed_id == bedIdArray[section]})?.name ?? "no name"
-        
-        return "Bed: \(bedNameString)"
+        if bedsDecoded {
+            let bedNameString = bedList?.beds.first(where: {$0.bed_id == bedIdArray[section]})?.name ?? "no name"
+            
+            return "Bed: \(bedNameString)"
+        }
+        else {
+            return ""
+        }
     }
 
     // Create a standard footer that includes the returned text.
     func tableView(_ tableView: UITableView, titleForFooterInSection
                                 section: Int) -> String? {
-        //display name of bed in footer
-        let bedNameString = bedList?.beds.first(where: {$0.bed_id == bedIdArray[section]})?.name ?? "no name"
         
-        return "Bed: \(bedNameString)"
+        //display name of bed in footer
+        if bedsDecoded {
+            let bedNameString = bedList?.beds.first(where: {$0.bed_id == bedIdArray[section]})?.name ?? "no name"
+            return "Bed: \(bedNameString)"
+        } else {
+            return ""
+        }
     }
 
     
@@ -244,6 +253,14 @@ class ViewController: UIViewController, UITableViewDelegate,
         // Use data from the view controller which initiated the unwind segue
     }
     
+    @IBAction func questionMarkButtonTapped(_ sender: Any) {
+        let alert = UIAlertController(title: "Trail Information", message: "Here you can view informationn about trails", preferredStyle: .actionSheet)
+        alert.addTextField()
+        alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: "Default action"), style: .default, handler: { _ in
+        NSLog("The \"OK\" alert occured.")
+        }))
+        self.present(alert, animated: true, completion: nil)
+    }
     
     @IBAction func trailDidChange(_ sender: UISegmentedControl) {
                
@@ -258,6 +275,8 @@ class ViewController: UIViewController, UITableViewDelegate,
         }
         
     }
+    
+    
     
     func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
         
