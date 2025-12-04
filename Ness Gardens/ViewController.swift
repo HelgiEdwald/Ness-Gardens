@@ -12,11 +12,12 @@ class ViewController: UIViewController, UITableViewDelegate,
     UITableViewDataSource, MKMapViewDelegate, CLLocationManagerDelegate
 {
 
-    //MARK: Outlets
+    //MARK: Initialising Variables
+    
+    //outlets
     @IBOutlet weak var myTable: UITableView!
     @IBOutlet weak var myMap: MKMapView!
 
-    //MARK: Variables
     //user location
     var locationManager = CLLocationManager()
     var firstRun = true
@@ -213,9 +214,7 @@ class ViewController: UIViewController, UITableViewDelegate,
         //set empty variables to selected plant's structure and image file names
         selectedPlant = cellPlant
         selectedImageFileNameArray = imageList?.images.filter({$0.recnum == selectedPlant?.recnum}).map(\.img_file_name) ?? []
-        
-        print("Img list of selected plant: \(selectedImageFileNameArray)")
-        
+                
         performSegue(withIdentifier: "toDetail", sender: cellPlant)
         
     }
@@ -342,6 +341,7 @@ class ViewController: UIViewController, UITableViewDelegate,
         }
 
     }
+    
     func decodeImageData() {
         //set up the URL
         if let url = URL(string: "https://cgi.csc.liv.ac.uk/~phil/Teaching/COMP228/ness/data.php?class=images") {
@@ -475,7 +475,9 @@ class ViewController: UIViewController, UITableViewDelegate,
         
     }
     
-    //MARK: function to add plants to total array and to filtered array if they are still present and alive in Ness Gardens
+    //MARK: helper functions
+    
+    //function to add plants to total array and to filtered array if they are still present and alive in Ness Gardens
     func filterOutDeadPlants(list: plantRecords) {
         
         for plant in list.plants {
@@ -496,7 +498,7 @@ class ViewController: UIViewController, UITableViewDelegate,
         }
     }
     
-    //MARK: function to populate a dictionary used for the table view so where beds are mapped to all the plants in that bed
+    //function to populate a dictionary used for the table view so where beds are mapped to all the plants in that bed
     func populateBedToPlantDict() {
         
         for aPlant in self.alivePlants {
@@ -520,13 +522,7 @@ class ViewController: UIViewController, UITableViewDelegate,
         
     }
 
-
-    
-    func updateTheTable() {
-        myTable.reloadData()
-    }
-
-    //MARK: function to add bed locations to map as annotations
+    //function to add bed locations to map as annotations
     func addBedsToMap(bedArray: [Bed]) {
 
         for bed in bedArray {
@@ -544,7 +540,7 @@ class ViewController: UIViewController, UITableViewDelegate,
         
     }
     
-    //MARK: function to sort a bed array by proximity to a locataion
+    //function to sort a bed array by proximity to a locataion
     func sortBedArrayByProximity(arrayOfBeds: [Bed], userLatitude: CLLocationDegrees, userLongitude: CLLocationDegrees) -> Array<Bed>{
         
         //new array where parametered array is sorted by distance to parametered user location
@@ -560,6 +556,16 @@ class ViewController: UIViewController, UITableViewDelegate,
         }
         
         return sortedBedArray
+        
+    }
+    
+    //function to reload table data
+    func updateTheTable() {
+            myTable.reloadData()
+        }
+    
+    //function to draw trail
+    func drawTrail() {
         
     }
     
