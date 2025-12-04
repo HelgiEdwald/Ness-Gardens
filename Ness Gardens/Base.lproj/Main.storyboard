@@ -83,13 +83,29 @@
                                 </connections>
                             </tableView>
                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="6d3-x1-CEf">
-                                <rect key="frame" x="16" y="124" width="361" height="299"/>
+                                <rect key="frame" x="16" y="162" width="361" height="261"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <standardMapConfiguration key="preferredConfiguration"/>
                                 <connections>
                                     <outlet property="delegate" destination="BYZ-38-t0r" id="BCM-eP-Y29"/>
                                 </connections>
                             </mapView>
+                            <segmentedControl opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="6Wg-ml-Qgc">
+                                <rect key="frame" x="16" y="124" width="319" height="32"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <segments>
+                                    <segment title="none"/>
+                                    <segment title="Trail 1"/>
+                                    <segment title="Trail 2"/>
+                                    <segment title="Trail 3"/>
+                                </segments>
+                            </segmentedControl>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="lGu-cB-qth">
+                                <rect key="frame" x="343" y="124" width="34" height="29"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="gray" image="questionmark.app" catalog="system"/>
+                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -181,6 +197,7 @@
         <image name="arrow.left" catalog="system" width="128" height="95"/>
         <image name="arrow.right" catalog="system" width="128" height="95"/>
         <image name="chevron.backward.circle" catalog="system" width="128" height="123"/>
+        <image name="questionmark.app" catalog="system" width="128" height="114"/>
         <image name="square.and.arrow.up" catalog="system" width="110" height="128"/>
         <systemColor name="labelColor">
             <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
