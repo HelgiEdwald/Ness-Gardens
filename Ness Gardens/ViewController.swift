@@ -17,7 +17,8 @@ class ViewController: UIViewController, UITableViewDelegate,
     //outlets
     @IBOutlet weak var myTable: UITableView!
     @IBOutlet weak var myMap: MKMapView!
-
+    @IBOutlet weak var mySegmentedControl: UISegmentedControl!
+    
     //user location
     var locationManager = CLLocationManager()
     var firstRun = true
@@ -25,17 +26,22 @@ class ViewController: UIViewController, UITableViewDelegate,
     var userLocation = CLLocationCoordinate2D(latitude: 0.0, longitude: 0.0)
     
     //variables to populate with decoded json data
-    var plantList: plantRecords? = nil
-    var allPlants: [Plant] = []
-    var alivePlants: [Plant] = []
-    var imageList: imageRecords? = nil
     var bedList: bedRecords? = nil
+    var plantList: plantRecords? = nil
+    var imageList: imageRecords? = nil
     var trailList: trailRecords? = nil
     var trailLocationList: trailLocatationRecords? = nil
+    var allPlants: [Plant] = []
+    var alivePlants: [Plant] = []
     var bedArray: [Bed] = []
     var bedIdArray: [String] = []
     var bedToPlantDict: [String: [Plant]] = [:]
 
+    var trailArray: [Trail] = []
+    var trailLocationArray: [trailLocatation] = []
+    
+    var trailCoordinates: [CLLocation] = []
+    
     //Booleans to check if JSON data has been decoded
     var bedsDecoded = false
     var plantsDecoded = false
@@ -236,6 +242,23 @@ class ViewController: UIViewController, UITableViewDelegate,
         let sourceViewController = unwindSegue.source
         // Use data from the view controller which initiated the unwind segue
     }
+    
+    
+    @IBAction func trailDidChange(_ sender: UISegmentedControl) {
+        switch sender.selectedSegmentIndex {
+        case 0:
+            print("No trail selected")
+        case 1:
+            print("Visitor trail selected")
+        case 2:
+            print("Tree trail selected")
+        case 3:
+            print("Easy Access trail selected")
+        default:
+            print("Something weird")
+        }
+    }
+    
     
     //MARK: Decoding JSON data
     func decodeBedData() {
@@ -454,7 +477,6 @@ class ViewController: UIViewController, UITableViewDelegate,
                     DispatchQueue.main.async {
 
                         if let list = self.trailLocationList {
-                            
                             
                             
                         }
