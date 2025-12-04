@@ -83,7 +83,7 @@
                                 </connections>
                             </tableView>
                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="6d3-x1-CEf">
-                                <rect key="frame" x="16" y="118" width="361" height="299"/>
+                                <rect key="frame" x="16" y="124" width="361" height="299"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <standardMapConfiguration key="preferredConfiguration"/>
                                 <connections>
@@ -127,11 +127,6 @@
                                     <segue destination="1xI-d1-UWQ" kind="unwind" identifier="unwindToMain" unwindAction="unwindToMainView:" id="4RJ-UQ-ETj"/>
                                 </connections>
                             </button>
-                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="4dX-SG-5aD">
-                                <rect key="frame" x="243" y="133" width="143" height="109"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <standardMapConfiguration key="preferredConfiguration"/>
-                            </mapView>
                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" editable="NO" text="Plant Information" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="e5Z-EI-FM0">
                                 <rect key="frame" x="16" y="133" width="219" height="239"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -158,6 +153,11 @@
                                     <action selector="nextImageButtonTapped:" destination="PGd-A3-mHQ" eventType="touchUpInside" id="WjB-30-hOV"/>
                                 </connections>
                             </button>
+                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="4dX-SG-5aD">
+                                <rect key="frame" x="243" y="133" width="143" height="109"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <standardMapConfiguration key="preferredConfiguration"/>
+                            </mapView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="SHr-sb-SfH"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
