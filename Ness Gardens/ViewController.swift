@@ -126,6 +126,22 @@ class ViewController: UIViewController, UITableViewDelegate,
     @objc func startUserTracking() {
         startTrackingTheUser = true
     }
+    
+    //render overlay in map view
+    func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
+        
+        switch overlay {
+        case let polyline as MKPolyline:
+            
+            let renderer = MKPolylineRenderer(polyline: polyline)
+            renderer.strokeColor = .blue
+            renderer.lineWidth = 3
+            return renderer
+            
+        default:
+            fatalError("Unexpected MKOverlay type")
+        }
+    }
 
     //MARK: Table View
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -169,7 +185,7 @@ class ViewController: UIViewController, UITableViewDelegate,
         }
     }
 
-    
+    //configure and return cell
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         //cast to cell to custom tableview cell
@@ -219,7 +235,8 @@ class ViewController: UIViewController, UITableViewDelegate,
         
         return cell
     }
-
+    
+    //go to detail view controller to view selected plant
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         //get values from selected row
@@ -253,6 +270,8 @@ class ViewController: UIViewController, UITableViewDelegate,
         // Use data from the view controller which initiated the unwind segue
     }
     
+    //MARK: Actions
+    //display information about trails with an alert if button near segmented control tapped
     @IBAction func questionMarkButtonTapped(_ sender: Any) {
         let alertMessage = """
         \(trailArray[0].Trail_Name)
@@ -283,6 +302,7 @@ class ViewController: UIViewController, UITableViewDelegate,
         self.present(alert, animated: true, completion: nil)
     }
     
+    //swap trails using segmented control index
     @IBAction func trailDidChange(_ sender: UISegmentedControl) {
                
         let trailIndex = sender.selectedSegmentIndex - 1
@@ -297,25 +317,8 @@ class ViewController: UIViewController, UITableViewDelegate,
         
     }
     
-    
-    
-    func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
-        
-        switch overlay {
-        case let polyline as MKPolyline:
-            
-            let renderer = MKPolylineRenderer(polyline: polyline)
-            renderer.strokeColor = .blue
-            renderer.lineWidth = 3
-            return renderer
-            
-        default:
-            fatalError("Unexpected MKOverlay type")
-        }
-    }
-    
-    
     //MARK: Decoding JSON data
+    
     func decodeBedData() {
         
         //set up the URL
@@ -538,7 +541,7 @@ class ViewController: UIViewController, UITableViewDelegate,
 
                         if let list = self.trailLocationList {
                           
-                            
+                            //set values in coordinate dictionary to coordinates made from trail location lats and lons with trail id as keys
                             for trail_location in list.trail_locations {
                                 if self.trailCoordinateDict[trail_location.Trail_ID] == nil {
                                     self.trailCoordinateDict[trail_location.Trail_ID] = [CLLocationCoordinate2D(latitude: Double(trail_location.Latitude)!, longitude: Double(trail_location.Longitude)!)]
@@ -549,7 +552,6 @@ class ViewController: UIViewController, UITableViewDelegate,
                                 
                                 
                             }
-                            print(self.trailCoordinateDict)
                             self.trailLocationsDecoded = true
                             self.mySegmentedControl.isEnabled = true
                             

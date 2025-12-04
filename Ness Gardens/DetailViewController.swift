@@ -10,14 +10,16 @@ import MapKit
 
 class DetailViewController: UIViewController {
     
-    //MARK: Outlets
+    //MARK: Outlets and Variables
+    
+    //outlets
     @IBOutlet weak var plantImageView1: UIImageView!
     @IBOutlet weak var plantMapView: MKMapView!
     @IBOutlet weak var plantTextView: UITextView!
     @IBOutlet weak var previousImageButton: UIButton!
     @IBOutlet weak var nextImageButton: UIButton!
     
-    //MARK: Variables passed along from main view controller
+    //variables
     var plantReceived: Plant?
     var selectedPlantImage: UIImage?
     var receivedImageFileNameArray: [String] = []
@@ -25,102 +27,9 @@ class DetailViewController: UIViewController {
     //set image index to first element
     var currentImageIndex = 0
 
-    //MARK: unwind to main view controller if back button pressed
+    //MARK: Actions and a helper function
     @IBAction func backButtonPressed(_ sender: Any) {
         performSegue(withIdentifier: "unwindToMain", sender: nil)
-    }
-    
-    //MARK: disable and hide buttons
-    func disableAndHideButtons() {
-        
-        previousImageButton.isUserInteractionEnabled = false
-        nextImageButton.isUserInteractionEnabled = false
-        previousImageButton.isHidden = true
-        nextImageButton.isHidden = true
-        
-    }
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        plantTextView.text.append("\n\n")
-        
-        //display text information in text view
-        if let familyString = plantReceived?.family, plantReceived?.family != ""{
-            plantTextView.text.append("Family: \(familyString)\n\n")
-        }
-        
-        if let genusString = plantReceived?.genus, plantReceived?.genus != "" {
-            plantTextView.text.append("Genus: \(genusString)\n\n")
-        }
-        
-        if let speciesString = plantReceived?.species, plantReceived?.species != "" {
-            plantTextView.text.append("Species: \(speciesString)\n\n")
-        }
-        
-        if let countryString = plantReceived?.country, plantReceived?.country != "" {
-            plantTextView.text.append("Country: \(countryString)\n\n")
-        }
-        
-        if let epithetString = plantReceived?.infraspecificEpithet, plantReceived?.infraspecificEpithet != "" {
-            plantTextView.text.append("Epithet: \(epithetString)\n\n")
-        }
-        
-        if let vernacularString = plantReceived?.vernacularName, plantReceived?.vernacularName != "" {
-            plantTextView.text.append("Epithet: \(vernacularString)\n\n")
-        }
-        
-        if let donorString = plantReceived?.donor, plantReceived?.donor != "" {
-            plantTextView.text.append("Epithet: \(donorString)\n\n")
-        }
-        
-        if let memoriamString = plantReceived?.memoriam, plantReceived?.memoriam != "" {
-            plantTextView.text.append("Memoriam: \(memoriamString)")
-        }
-        
-        //display images if image file name array has elements in it
-        if !receivedImageFileNameArray.isEmpty {
-            
-            let imageFileName = receivedImageFileNameArray[currentImageIndex]
-            let urlString = "https://cgi.csc.liv.ac.uk/~phil/Teaching/COMP228/ness_images/\(imageFileName)"
-            let url = URL(string: urlString)!
-            plantImageView1.load(url:url)
-            
-            //disable and hide buttons if there is only 1 image file name
-            if receivedImageFileNameArray.count == 1 {
-                disableAndHideButtons()
-            }
-        }
-        
-        //show question mark image if there are no elements in image file name array and disable/hide buttons
-        else {
-            
-            plantImageView1.image = UIImage(named: "no plant image")
-            disableAndHideButtons()
-            
-        }
-
-        //show map view with annotation if received plant has non-nil latitude
-        if let lat = plantReceived?.latitude, !lat.isEmpty {
-            let span = MKCoordinateSpan(latitudeDelta: 10, longitudeDelta: 10)
-            guard let lon = plantReceived?.longitude else { return }
-            guard let latitude = Double(lat) else { return }
-            guard let longitude = Double(lon) else { return }
-            let coordinate = CLLocationCoordinate2D(
-                latitude: latitude,
-                longitude: longitude
-            )
-            let annotation = MKPointAnnotation()
-            annotation.coordinate = coordinate
-            plantMapView.addAnnotation(annotation)
-            
-            let region = MKCoordinateRegion(center: coordinate, span: span)
-            plantMapView.setRegion(region, animated: true)
-        }
-        else {
-            plantMapView.isHidden = true
-        }
-        
     }
     
     @IBAction func previousImageButtonTapped(_ sender: Any) {
@@ -202,6 +111,100 @@ class DetailViewController: UIViewController {
             }.resume()
             print("decoding image data")
         }
+    }
+    
+    
+    //function to disable and hide the buttons when they are not needed
+    func disableAndHideButtons() {
+        
+        previousImageButton.isUserInteractionEnabled = false
+        nextImageButton.isUserInteractionEnabled = false
+        previousImageButton.isHidden = true
+        nextImageButton.isHidden = true
+        
+    }
+    //MARK: View related stuff
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        //display text information in text view
+        plantTextView.text.append("\n\n")
+        
+        if let familyString = plantReceived?.family, plantReceived?.family != ""{
+            plantTextView.text.append("Family: \(familyString)\n\n")
+        }
+        
+        if let genusString = plantReceived?.genus, plantReceived?.genus != "" {
+            plantTextView.text.append("Genus: \(genusString)\n\n")
+        }
+        
+        if let speciesString = plantReceived?.species, plantReceived?.species != "" {
+            plantTextView.text.append("Species: \(speciesString)\n\n")
+        }
+        
+        if let countryString = plantReceived?.country, plantReceived?.country != "" {
+            plantTextView.text.append("Country: \(countryString)\n\n")
+        }
+        
+        if let epithetString = plantReceived?.infraspecificEpithet, plantReceived?.infraspecificEpithet != "" {
+            plantTextView.text.append("Epithet: \(epithetString)\n\n")
+        }
+        
+        if let vernacularString = plantReceived?.vernacularName, plantReceived?.vernacularName != "" {
+            plantTextView.text.append("Epithet: \(vernacularString)\n\n")
+        }
+        
+        if let donorString = plantReceived?.donor, plantReceived?.donor != "" {
+            plantTextView.text.append("Epithet: \(donorString)\n\n")
+        }
+        
+        if let memoriamString = plantReceived?.memoriam, plantReceived?.memoriam != "" {
+            plantTextView.text.append("Memoriam: \(memoriamString)")
+        }
+        
+        //display images if image file name array has elements in it
+        if !receivedImageFileNameArray.isEmpty {
+            
+            let imageFileName = receivedImageFileNameArray[currentImageIndex]
+            let urlString = "https://cgi.csc.liv.ac.uk/~phil/Teaching/COMP228/ness_images/\(imageFileName)"
+            let url = URL(string: urlString)!
+            plantImageView1.load(url:url)
+            
+            //disable and hide buttons if there is only 1 image file name
+            if receivedImageFileNameArray.count == 1 {
+                disableAndHideButtons()
+            }
+        }
+        
+        //show question mark image if there are no elements in image file name array and disable/hide buttons
+        else {
+            
+            plantImageView1.image = UIImage(named: "no plant image")
+            disableAndHideButtons()
+            
+        }
+
+        //show map view with annotation if received plant has non-nil latitude
+        if let lat = plantReceived?.latitude, !lat.isEmpty {
+            let span = MKCoordinateSpan(latitudeDelta: 10, longitudeDelta: 10)
+            guard let lon = plantReceived?.longitude else { return }
+            guard let latitude = Double(lat) else { return }
+            guard let longitude = Double(lon) else { return }
+            let coordinate = CLLocationCoordinate2D(
+                latitude: latitude,
+                longitude: longitude
+            )
+            let annotation = MKPointAnnotation()
+            annotation.coordinate = coordinate
+            plantMapView.addAnnotation(annotation)
+            
+            let region = MKCoordinateRegion(center: coordinate, span: span)
+            plantMapView.setRegion(region, animated: true)
+        }
+        else {
+            plantMapView.isHidden = true
+        }
+        
     }
     
 }
