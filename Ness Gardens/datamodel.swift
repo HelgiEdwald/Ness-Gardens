@@ -62,3 +62,36 @@ struct Bed: Decodable {
     let latitude, longitude: String
     let last_modified: String
 }
+
+nonisolated
+struct trailLocatationRecords: Decodable {
+    let trailLocations: [trailLocatation]
+}
+
+nonisolated
+struct trailLocatation: Decodable {
+    let ID: String
+    let Trail_ID: String
+    let Sequence_No: String
+    let Latitude: String
+    let Longitude: String
+    let Active: String
+    let last_modified: String
+}
+
+nonisolated
+struct trailRecords: Decodable {
+    let trails: [Trail]
+}
+
+nonisolated
+struct Trail: Decodable {
+    let ID: String
+    let Trail_Name: String
+    let Distance: String
+    let Duration: String
+    let Description: String
+    let Difficulty: String
+    let Active: String
+    let last_modified: String
+}
