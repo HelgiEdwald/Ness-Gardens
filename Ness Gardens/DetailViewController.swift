@@ -151,11 +151,11 @@ class DetailViewController: UIViewController {
         }
         
         if let vernacularString = plantReceived?.vernacularName, plantReceived?.vernacularName != "" {
-            plantTextView.text.append("Epithet: \(vernacularString)\n\n")
+            plantTextView.text.append("Vernacular Name: \(vernacularString)\n\n")
         }
         
         if let donorString = plantReceived?.donor, plantReceived?.donor != "" {
-            plantTextView.text.append("Epithet: \(donorString)\n\n")
+            plantTextView.text.append("Donor: \(donorString)\n\n")
         }
         
         if let memoriamString = plantReceived?.memoriam, plantReceived?.memoriam != "" {
