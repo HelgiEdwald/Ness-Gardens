@@ -327,9 +327,10 @@ class ViewController: UIViewController, UITableViewDelegate,
     //MARK: Decode JSON Data
     
     func decodeBedData() {
+        let lastModified = UserDefaults.standard.object(forKey: "lastTimeRan") as? String? ?? ""
         
         //set up the URL
-        if let url = URL(string: "https://cgi.csc.liv.ac.uk/~phil/Teaching/COMP228/ness/data.php?class=beds") {
+        if let url = URL(string: "https://cgi.csc.liv.ac.uk/~phil/Teaching/COMP228/ness/data.php?class=beds&last_modified=\(lastModified)") {
             
             //create a URL session running on a background thread
             let session = URLSession.shared
@@ -344,8 +345,8 @@ class ViewController: UIViewController, UITableViewDelegate,
                 do {
                     let decoder = JSONDecoder()
                     let bedData = try decoder.decode(bedRecords.self, from: jsonData)
-                    self.bedList = bedData
                     
+                    self.bedList = bedData
                     self.bedsDecoded = true
                     
                     DispatchQueue.main.async {
@@ -355,6 +356,7 @@ class ViewController: UIViewController, UITableViewDelegate,
                             for bed in list.beds {
                                 self.saveBedData(bedToSave: bed)
                             }
+                            self.fetchBedData()
                             for bed in self.coreBeds {
                                 if self.bedArray.isEmpty {
                                     self.bedArray.insert(bed, at: 0)
@@ -368,10 +370,19 @@ class ViewController: UIViewController, UITableViewDelegate,
                                 }
                                 
                             }
-                            self.fetchBedData()
+                            print("saved b: ", self.coreBeds.count)
+
                             self.populateBedToPlantDict(plantArray: self.corePlants)
                             self.addBedsToMap(bedArray: self.coreBeds)
+                            print("dict",self.bedToPlantDict.count)
                             self.updateTheTable()
+                            
+                            //grab todays date in YYYY-MM-DD, store in UD
+                            let date = Date()
+                            let formatter = DateFormatter()
+                            formatter.dateFormat = "yyyy-MM-dd"
+                            let result = formatter.string(from: date)
+                            UserDefaults.standard.set(result, forKey: "lastTimeRan")
                         }
                     }
                     
@@ -786,25 +797,52 @@ class ViewController: UIViewController, UITableViewDelegate,
         }
     }
     
+//    func saveBedData(bedToSave: Bed) {
+//        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
+//            return
+//        }
+//        let managedContext = appDelegate.persistentContainer.viewContext
+//        let savedBed = NSEntityDescription.insertNewObject(forEntityName: "CoreBed", into: managedContext) as! CoreBed
+//        
+//        savedBed.bed_id = bedToSave.bed_id
+//        savedBed.name = bedToSave.name
+//        savedBed.latitude = bedToSave.latitude
+//        savedBed.longitude = bedToSave.longitude
+//        savedBed.last_modified = bedToSave.last_modified
+//        
+//        do {
+//            try managedContext.save()
+//            coreBeds.append(savedBed)
+//            print("Saved beds", coreBeds.count)
+//        } catch let error as NSError {
+//            print("Could not save. \(error), \(error.userInfo)")
+//        }
+//    }
+    
     func saveBedData(bedToSave: Bed) {
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
             return
         }
-        let managedContext = appDelegate.persistentContainer.viewContext
-        let savedBed = NSEntityDescription.insertNewObject(forEntityName: "CoreBed", into: managedContext) as! CoreBed
+        let context = appDelegate.persistentContainer.viewContext
+
+        // Look up existing plant by recnum
+        let fetchRequest: NSFetchRequest<CoreBed> = CoreBed.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "bed_id == %@", bedToSave.bed_id)
+
+        let existing = (try? context.fetch(fetchRequest))?.first
+
+        let coreBed = existing ?? CoreBed(context: context)
         
-        savedBed.bed_id = bedToSave.bed_id
-        savedBed.name = bedToSave.name
-        savedBed.latitude = bedToSave.latitude
-        savedBed.longitude = bedToSave.longitude
-        savedBed.last_modified = bedToSave.last_modified
+        coreBed.bed_id = bedToSave.bed_id
+        coreBed.name = bedToSave.name
+        coreBed.latitude = bedToSave.latitude
+        coreBed.longitude = bedToSave.longitude
+        coreBed.last_modified = bedToSave.last_modified
         
         do {
-            try managedContext.save()
-            coreBeds.append(savedBed)
-            print("Saved beds", coreBeds.count)
-        } catch let error as NSError {
-            print("Could not save. \(error), \(error.userInfo)")
+            try context.save()
+        } catch {
+            print("Error saving plant \(error)")
         }
     }
     
@@ -940,13 +978,6 @@ class ViewController: UIViewController, UITableViewDelegate,
         myMap.removeOverlays(myMap.overlays)
         let polyline = MKPolyline(coordinates: coordinateArray, count: coordinateArray.count)
         myMap.addOverlay(polyline)
-    }
-    
-    //function to save image data on main thread
-    func saveImageDataOnMain(image: Image) {
-        DispatchQueue.main.async {
-            self.saveImageData(imageToSave: image )
-        }
     }
     
     //MARK: View related stuff
