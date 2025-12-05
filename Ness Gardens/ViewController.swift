@@ -370,7 +370,7 @@ class ViewController: UIViewController, UITableViewDelegate,
                                 }
                                 
                             }
-                            print("saved b: ", self.coreBeds.count)
+                            print("saved beds: ", self.coreBeds.count)
 
                             self.populateBedToPlantDict(plantArray: self.corePlants)
                             self.addBedsToMap(bedArray: self.coreBeds)
@@ -440,7 +440,7 @@ class ViewController: UIViewController, UITableViewDelegate,
                         
                         self.fetchPlantData()
                         
-                        print("saved: ", self.corePlants.count)
+                        print("saved plants: ", self.corePlants.count)
                         self.populateBedToPlantDict(plantArray: self.corePlants)
                         self.addBedsToMap(bedArray: self.coreBeds)
                         print("dict",self.bedToPlantDict.count)
@@ -498,10 +498,12 @@ class ViewController: UIViewController, UITableViewDelegate,
                             }
                         }
                     }
+                    
                     DispatchQueue.main.async {
                         self.fetchImageData()
+                        print("Saved images", self.coreImages.count)
                     }
-                    
+
                     
                 }
                 
@@ -638,102 +640,6 @@ class ViewController: UIViewController, UITableViewDelegate,
         }
     }
     
-//    func savePlantData(plantToSave: Plant) {
-//        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
-//            return
-//        }
-//        let managedContext = appDelegate.persistentContainer.viewContext
-//        
-//        let savedPlant = NSEntityDescription.insertNewObject(forEntityName: "CorePlant", into: managedContext) as! CorePlant
-//        let lastModified = UserDefaults.standard.object(forKey: "lastTimeRan") as? String? ?? ""
-//        if lastModified == "" {
-//            savedPlant.recnum = plantToSave.recnum
-//            savedPlant.acid = plantToSave.acid
-//            savedPlant.accsta = plantToSave.accsta
-//            savedPlant.family = plantToSave.family
-//            savedPlant.genus = plantToSave.genus
-//            savedPlant.species = plantToSave.species
-//            savedPlant.infraspecificEpithet = plantToSave.infraspecificEpithet
-//            savedPlant.vernacularName = plantToSave.vernacularName
-//            savedPlant.cultivarName = plantToSave.cultivarName
-//            savedPlant.donor = plantToSave.donor
-//            savedPlant.latitude = plantToSave.latitude
-//            savedPlant.longitude = plantToSave.longitude
-//            savedPlant.country = plantToSave.country
-//            savedPlant.iso = plantToSave.iso
-//            savedPlant.sgu = plantToSave.sgu
-//            savedPlant.loc = plantToSave.loc
-//            savedPlant.alt = plantToSave.alt
-//            savedPlant.cnam = plantToSave.cnam
-//            savedPlant.cid = plantToSave.cid
-//            savedPlant.cdat = plantToSave.cdat
-//            savedPlant.bed = plantToSave.bed
-//            savedPlant.memoriam = plantToSave.memoriam
-//            if plantToSave.redlist != nil {
-//                savedPlant.redlist = plantToSave.redlist
-//            }
-//            savedPlant.last_modified = plantToSave.last_modified
-//            
-//            do {
-//                try managedContext.save()
-//                corePlants.append(savedPlant)
-//                print("Saved plants", corePlants.count)
-//                
-//            } catch let error as NSError {
-//                print("Could not save. \(error), \(error.userInfo)")
-//            }
-//        }
-//        
-//        else {
-//            let fetch = NSFetchRequest<NSFetchRequestResult>(entityName: "CorePlant")
-//            fetch.fetchLimit = 1
-//            fetch.predicate = NSPredicate(format: "recnum == %@", plantToSave.recnum)
-//            
-//            let placeHolderPlant: CorePlant
-//            
-//            if let existing = try? managedContext.fetch(fetch).first {
-//                placeHolderPlant = existing as! CorePlant
-//                
-//                placeHolderPlant.recnum = plantToSave.recnum
-//                placeHolderPlant.acid = plantToSave.acid
-//                placeHolderPlant.accsta = plantToSave.accsta
-//                placeHolderPlant.family = plantToSave.family
-//                placeHolderPlant.genus = plantToSave.genus
-//                placeHolderPlant.species = plantToSave.species
-//                placeHolderPlant.infraspecificEpithet = plantToSave.infraspecificEpithet
-//                placeHolderPlant.vernacularName = plantToSave.vernacularName
-//                placeHolderPlant.cultivarName = plantToSave.cultivarName
-//                placeHolderPlant.donor = plantToSave.donor
-//                placeHolderPlant.latitude = plantToSave.latitude
-//                placeHolderPlant.longitude = plantToSave.longitude
-//                placeHolderPlant.country = plantToSave.country
-//                placeHolderPlant.iso = plantToSave.iso
-//                placeHolderPlant.sgu = plantToSave.sgu
-//                placeHolderPlant.loc = plantToSave.loc
-//                placeHolderPlant.alt = plantToSave.alt
-//                placeHolderPlant.cnam = plantToSave.cnam
-//                placeHolderPlant.cid = plantToSave.cid
-//                placeHolderPlant.cdat = plantToSave.cdat
-//                placeHolderPlant.bed = plantToSave.bed
-//                placeHolderPlant.memoriam = plantToSave.memoriam
-//                if placeHolderPlant.redlist != nil {
-//                    placeHolderPlant.redlist = plantToSave.redlist
-//                }
-//                placeHolderPlant.last_modified = plantToSave.last_modified
-//            }
-//            
-//      
-//            
-//            do {
-//                try managedContext.save()
-//               // corePlants.append(placeHolderPlant)
-//                //print("Saved plants", corePlants.count)
-//                
-//            } catch let error as NSError {
-//                print("Could not save. \(error), \(error.userInfo)")
-//            }
-//        }
-//    }
     
     func savePlantData(plantToSave: Plant) {
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
@@ -777,6 +683,7 @@ class ViewController: UIViewController, UITableViewDelegate,
 
         do {
             try context.save()
+
         } catch {
             print("Error saving plant \(error)")
         }
@@ -796,29 +703,7 @@ class ViewController: UIViewController, UITableViewDelegate,
             print("Could not fetch. \(error), \(error.userInfo)")
         }
     }
-    
-//    func saveBedData(bedToSave: Bed) {
-//        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
-//            return
-//        }
-//        let managedContext = appDelegate.persistentContainer.viewContext
-//        let savedBed = NSEntityDescription.insertNewObject(forEntityName: "CoreBed", into: managedContext) as! CoreBed
-//        
-//        savedBed.bed_id = bedToSave.bed_id
-//        savedBed.name = bedToSave.name
-//        savedBed.latitude = bedToSave.latitude
-//        savedBed.longitude = bedToSave.longitude
-//        savedBed.last_modified = bedToSave.last_modified
-//        
-//        do {
-//            try managedContext.save()
-//            coreBeds.append(savedBed)
-//            print("Saved beds", coreBeds.count)
-//        } catch let error as NSError {
-//            print("Could not save. \(error), \(error.userInfo)")
-//        }
-//    }
-    
+        
     func saveBedData(bedToSave: Bed) {
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
             return
@@ -878,7 +763,6 @@ class ViewController: UIViewController, UITableViewDelegate,
         do {
             try managedContext.save()
             coreImages.append(savedImage)
-            print("Saved images", coreImages.count)
         } catch let error as NSError {
             print("Could not save. \(error), \(error.userInfo)")
         }
