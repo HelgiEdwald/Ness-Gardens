@@ -1,4 +1,29 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="1" systemVersion="11A491" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithCloudKit="false" userDefinedModelVersionIdentifier="">
-    <elements/>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="24299" systemVersion="24G231" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="CorePlant" representedClassName="CorePlant" syncable="YES">
+        <attribute name="accsta" optional="YES" attributeType="String"/>
+        <attribute name="acid" optional="YES" attributeType="String"/>
+        <attribute name="alt" optional="YES" attributeType="String"/>
+        <attribute name="bed" optional="YES" attributeType="String"/>
+        <attribute name="cdat" optional="YES" attributeType="String"/>
+        <attribute name="cid" optional="YES" attributeType="String"/>
+        <attribute name="cnam" optional="YES" attributeType="String"/>
+        <attribute name="country" optional="YES" attributeType="String"/>
+        <attribute name="cultivarName" optional="YES" attributeType="String"/>
+        <attribute name="donor" optional="YES" attributeType="String"/>
+        <attribute name="family" optional="YES" attributeType="String"/>
+        <attribute name="genus" optional="YES" attributeType="String"/>
+        <attribute name="infraspecificEpithet" optional="YES" attributeType="String"/>
+        <attribute name="iso" optional="YES" attributeType="String"/>
+        <attribute name="last_modified" optional="YES" attributeType="String"/>
+        <attribute name="latitude" optional="YES" attributeType="String"/>
+        <attribute name="loc" optional="YES" attributeType="String"/>
+        <attribute name="longitude" optional="YES" attributeType="String"/>
+        <attribute name="memoriam" optional="YES" attributeType="String"/>
+        <attribute name="recnum" optional="YES" attributeType="String"/>
+        <attribute name="redlist" optional="YES" attributeType="String"/>
+        <attribute name="sgu" optional="YES" attributeType="String"/>
+        <attribute name="species" optional="YES" attributeType="String"/>
+        <attribute name="vernacularName" optional="YES" attributeType="String"/>
+    </entity>
 </model>

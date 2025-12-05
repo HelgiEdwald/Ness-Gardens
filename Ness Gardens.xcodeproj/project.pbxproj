@@ -7,10 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1F5C3C3B2EE2FFBA0048FB0C /* CorePlant+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5C3C392EE2FFBA0048FB0C /* CorePlant+CoreDataClass.swift */; };
+		1F5C3C3C2EE2FFBA0048FB0C /* CorePlant+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5C3C3A2EE2FFBA0048FB0C /* CorePlant+CoreDataProperties.swift */; };
 		1F63DBEA2ECF599D00F08797 /* NessWalk 25-Nov-2023 v2.gpx in Resources */ = {isa = PBXBuildFile; fileRef = 1F63DBE92ECF599D00F08797 /* NessWalk 25-Nov-2023 v2.gpx */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		1F5C3C392EE2FFBA0048FB0C /* CorePlant+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CorePlant+CoreDataClass.swift"; sourceTree = "<group>"; };
+		1F5C3C3A2EE2FFBA0048FB0C /* CorePlant+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CorePlant+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		1F63DBCE2ECF52D000F08797 /* Ness Gardens.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Ness Gardens.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1F63DBE92ECF599D00F08797 /* NessWalk 25-Nov-2023 v2.gpx */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "NessWalk 25-Nov-2023 v2.gpx"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -50,6 +54,8 @@
 		1F63DBC52ECF52D000F08797 = {
 			isa = PBXGroup;
 			children = (
+				1F5C3C392EE2FFBA0048FB0C /* CorePlant+CoreDataClass.swift */,
+				1F5C3C3A2EE2FFBA0048FB0C /* CorePlant+CoreDataProperties.swift */,
 				1F63DBE92ECF599D00F08797 /* NessWalk 25-Nov-2023 v2.gpx */,
 				1F63DBD02ECF52D000F08797 /* Ness Gardens */,
 				1F63DBCF2ECF52D000F08797 /* Products */,
@@ -139,6 +145,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1F5C3C3B2EE2FFBA0048FB0C /* CorePlant+CoreDataClass.swift in Sources */,
+				1F5C3C3C2EE2FFBA0048FB0C /* CorePlant+CoreDataProperties.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

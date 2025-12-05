@@ -55,6 +55,9 @@ class ViewController: UIViewController, UITableViewDelegate,
     var selectedPlantImage: UIImage?
     var selectedPlantImageFileName: String?
     var selectedImageFileNameArray: [String] = []
+    
+    //Core Data
+    var corePlants: [CorePlant] = [] //Empty array to hold records fetched from CoreData
 
     //MARK: Map and Location
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
