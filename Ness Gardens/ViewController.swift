@@ -148,15 +148,17 @@ class ViewController: UIViewController, UITableViewDelegate,
     }
 
     //MARK: Table View
+    
+    //set number of rows in each section to strings in values of bed to plant dictionary
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
-        //set number of rows in each section to strings in values of bed to plant dictionary
         let currentBedId = bedIdArray[section]
         return bedToPlantDict[currentBedId]?.count ?? 0
         
         
     }
 
+    //set number of sections to number of elements in bed id array
     func numberOfSections(in tableView: UITableView) -> Int {
         return bedIdArray.count
 
@@ -872,7 +874,7 @@ class ViewController: UIViewController, UITableViewDelegate,
         
         }
     
-    //function to draw trail
+    //function to draw trail by making a polyline out of coordinate array and adding it to the map as an overlay
     func drawTrail(coordinateArray: [CLLocationCoordinate2D]) {
         
         myMap.removeOverlays(myMap.overlays)

@@ -9,13 +9,14 @@ import UIKit
 
 class NessGardensTableViewCell: UITableViewCell {
     
-    // MARK: Outlets
+    //outlets
     @IBOutlet weak var thumbnailImageView: UIImageView!
     @IBOutlet weak var familyLabel: UILabel?
     @IBOutlet weak var speciesLabel: UILabel?
     @IBOutlet weak var favouriteButton: UIButton!
     @IBOutlet weak var genusLabel: UILabel!
     
+    //variables
     var favButtonPressed : (() -> ()) = {}
     
     override func awakeFromNib() {
