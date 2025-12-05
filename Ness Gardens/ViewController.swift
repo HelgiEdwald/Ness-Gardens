@@ -390,8 +390,11 @@ class ViewController: UIViewController, UITableViewDelegate,
 
     func decodePlantData() {
 
+        
+        let lastModified = UserDefaults.standard.object(forKey: "lastTimeRan") as? String? ?? ""
+            
         //set up the URL
-        if let url = URL(string: "https://cgi.csc.liv.ac.uk/~phil/Teaching/COMP228/ness/data.php?class=plants") {
+        if let url = URL(string: "https://cgi.csc.liv.ac.uk/~phil/Teaching/COMP228/ness/data.php?class=plants&last_modified=\(lastModified)") {
             
             //create a URL session running on a background thread
             let session = URLSession.shared
@@ -417,17 +420,28 @@ class ViewController: UIViewController, UITableViewDelegate,
                             self.filterOutDeadPlants(list: list)
                                                         
                             for plant in self.alivePlants {
+                                
                                 self.savePlantData(plantToSave: plant)
+                                
                             }
                             
                         }
                         
                         self.fetchPlantData()
+                        
+                        print("saved: ", self.corePlants.count)
                         self.populateBedToPlantDict(plantArray: self.corePlants)
                         self.addBedsToMap(bedArray: self.coreBeds)
                         print("dict",self.bedToPlantDict.count)
 
                         self.updateTheTable()
+                        
+                        //grab todays date in YYYY-MM-DD, store in UD
+                        let date = Date()
+                        let formatter = DateFormatter()
+                        formatter.dateFormat = "yyyy-MM-dd"
+                        let result = formatter.string(from: date)
+                        UserDefaults.standard.set(result, forKey: "lastTimeRan")
 
                     }
 
@@ -613,49 +627,150 @@ class ViewController: UIViewController, UITableViewDelegate,
         }
     }
     
+//    func savePlantData(plantToSave: Plant) {
+//        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
+//            return
+//        }
+//        let managedContext = appDelegate.persistentContainer.viewContext
+//        
+//        let savedPlant = NSEntityDescription.insertNewObject(forEntityName: "CorePlant", into: managedContext) as! CorePlant
+//        let lastModified = UserDefaults.standard.object(forKey: "lastTimeRan") as? String? ?? ""
+//        if lastModified == "" {
+//            savedPlant.recnum = plantToSave.recnum
+//            savedPlant.acid = plantToSave.acid
+//            savedPlant.accsta = plantToSave.accsta
+//            savedPlant.family = plantToSave.family
+//            savedPlant.genus = plantToSave.genus
+//            savedPlant.species = plantToSave.species
+//            savedPlant.infraspecificEpithet = plantToSave.infraspecificEpithet
+//            savedPlant.vernacularName = plantToSave.vernacularName
+//            savedPlant.cultivarName = plantToSave.cultivarName
+//            savedPlant.donor = plantToSave.donor
+//            savedPlant.latitude = plantToSave.latitude
+//            savedPlant.longitude = plantToSave.longitude
+//            savedPlant.country = plantToSave.country
+//            savedPlant.iso = plantToSave.iso
+//            savedPlant.sgu = plantToSave.sgu
+//            savedPlant.loc = plantToSave.loc
+//            savedPlant.alt = plantToSave.alt
+//            savedPlant.cnam = plantToSave.cnam
+//            savedPlant.cid = plantToSave.cid
+//            savedPlant.cdat = plantToSave.cdat
+//            savedPlant.bed = plantToSave.bed
+//            savedPlant.memoriam = plantToSave.memoriam
+//            if plantToSave.redlist != nil {
+//                savedPlant.redlist = plantToSave.redlist
+//            }
+//            savedPlant.last_modified = plantToSave.last_modified
+//            
+//            do {
+//                try managedContext.save()
+//                corePlants.append(savedPlant)
+//                print("Saved plants", corePlants.count)
+//                
+//            } catch let error as NSError {
+//                print("Could not save. \(error), \(error.userInfo)")
+//            }
+//        }
+//        
+//        else {
+//            let fetch = NSFetchRequest<NSFetchRequestResult>(entityName: "CorePlant")
+//            fetch.fetchLimit = 1
+//            fetch.predicate = NSPredicate(format: "recnum == %@", plantToSave.recnum)
+//            
+//            let placeHolderPlant: CorePlant
+//            
+//            if let existing = try? managedContext.fetch(fetch).first {
+//                placeHolderPlant = existing as! CorePlant
+//                
+//                placeHolderPlant.recnum = plantToSave.recnum
+//                placeHolderPlant.acid = plantToSave.acid
+//                placeHolderPlant.accsta = plantToSave.accsta
+//                placeHolderPlant.family = plantToSave.family
+//                placeHolderPlant.genus = plantToSave.genus
+//                placeHolderPlant.species = plantToSave.species
+//                placeHolderPlant.infraspecificEpithet = plantToSave.infraspecificEpithet
+//                placeHolderPlant.vernacularName = plantToSave.vernacularName
+//                placeHolderPlant.cultivarName = plantToSave.cultivarName
+//                placeHolderPlant.donor = plantToSave.donor
+//                placeHolderPlant.latitude = plantToSave.latitude
+//                placeHolderPlant.longitude = plantToSave.longitude
+//                placeHolderPlant.country = plantToSave.country
+//                placeHolderPlant.iso = plantToSave.iso
+//                placeHolderPlant.sgu = plantToSave.sgu
+//                placeHolderPlant.loc = plantToSave.loc
+//                placeHolderPlant.alt = plantToSave.alt
+//                placeHolderPlant.cnam = plantToSave.cnam
+//                placeHolderPlant.cid = plantToSave.cid
+//                placeHolderPlant.cdat = plantToSave.cdat
+//                placeHolderPlant.bed = plantToSave.bed
+//                placeHolderPlant.memoriam = plantToSave.memoriam
+//                if placeHolderPlant.redlist != nil {
+//                    placeHolderPlant.redlist = plantToSave.redlist
+//                }
+//                placeHolderPlant.last_modified = plantToSave.last_modified
+//            }
+//            
+//      
+//            
+//            do {
+//                try managedContext.save()
+//               // corePlants.append(placeHolderPlant)
+//                //print("Saved plants", corePlants.count)
+//                
+//            } catch let error as NSError {
+//                print("Could not save. \(error), \(error.userInfo)")
+//            }
+//        }
+//    }
+    
     func savePlantData(plantToSave: Plant) {
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
             return
         }
-        let managedContext = appDelegate.persistentContainer.viewContext
-        let savedPlant = NSEntityDescription.insertNewObject(forEntityName: "CorePlant", into: managedContext) as! CorePlant
-        
-        savedPlant.recnum = plantToSave.recnum
-        savedPlant.acid = plantToSave.acid
-        savedPlant.accsta = plantToSave.accsta
-        savedPlant.family = plantToSave.family
-        savedPlant.genus = plantToSave.genus
-        savedPlant.species = plantToSave.species
-        savedPlant.infraspecificEpithet = plantToSave.infraspecificEpithet
-        savedPlant.vernacularName = plantToSave.vernacularName
-        savedPlant.cultivarName = plantToSave.cultivarName
-        savedPlant.donor = plantToSave.donor
-        savedPlant.latitude = plantToSave.latitude
-        savedPlant.longitude = plantToSave.longitude
-        savedPlant.country = plantToSave.country
-        savedPlant.iso = plantToSave.iso
-        savedPlant.sgu = plantToSave.sgu
-        savedPlant.loc = plantToSave.loc
-        savedPlant.alt = plantToSave.alt
-        savedPlant.cnam = plantToSave.cnam
-        savedPlant.cid = plantToSave.cid
-        savedPlant.cdat = plantToSave.cdat
-        savedPlant.bed = plantToSave.bed
-        savedPlant.memoriam = plantToSave.memoriam
-        if plantToSave.redlist != nil {
-            savedPlant.redlist = plantToSave.redlist
-        }
-        savedPlant.last_modified = plantToSave.last_modified
-        
+        let context = appDelegate.persistentContainer.viewContext
+
+        // Look up existing plant by recnum
+        let fetchRequest: NSFetchRequest<CorePlant> = CorePlant.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "recnum == %@", plantToSave.recnum)
+
+        let existing = (try? context.fetch(fetchRequest))?.first
+
+        let corePlant = existing ?? CorePlant(context: context)
+
+        // update fields
+        corePlant.recnum = plantToSave.recnum
+        corePlant.acid = plantToSave.acid
+        corePlant.accsta = plantToSave.accsta
+        corePlant.family = plantToSave.family
+        corePlant.genus = plantToSave.genus
+        corePlant.species = plantToSave.species
+        corePlant.infraspecificEpithet = plantToSave.infraspecificEpithet
+        corePlant.vernacularName = plantToSave.vernacularName
+        corePlant.cultivarName = plantToSave.cultivarName
+        corePlant.donor = plantToSave.donor
+        corePlant.latitude = plantToSave.latitude
+        corePlant.longitude = plantToSave.longitude
+        corePlant.country = plantToSave.country
+        corePlant.iso = plantToSave.iso
+        corePlant.sgu = plantToSave.sgu
+        corePlant.loc = plantToSave.loc
+        corePlant.alt = plantToSave.alt
+        corePlant.cnam = plantToSave.cnam
+        corePlant.cid = plantToSave.cid
+        corePlant.cdat = plantToSave.cdat
+        corePlant.bed = plantToSave.bed
+        corePlant.memoriam = plantToSave.memoriam
+        corePlant.redlist = plantToSave.redlist
+        corePlant.last_modified = plantToSave.last_modified
+
         do {
-            try managedContext.save()
-            corePlants.append(savedPlant)
-            print("Saved plants", corePlants.count)
-            
-        } catch let error as NSError {
-            print("Could not save. \(error), \(error.userInfo)")
+            try context.save()
+        } catch {
+            print("Error saving plant \(error)")
         }
     }
+
     
     func fetchBedData() {
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
@@ -781,7 +896,6 @@ class ViewController: UIViewController, UITableViewDelegate,
     //function to add bed locations to map as annotations
     func addBedsToMap(bedArray: [CoreBed]) {
         
-        print("abtm", bedToPlantDict.count)
         for bed in bedArray {
             
             //filter out beds with no plants
@@ -844,7 +958,6 @@ class ViewController: UIViewController, UITableViewDelegate,
         print("vdl cp:", corePlants.count)
         print("vdl cb:", coreBeds.count)
         print("vdl ci:", coreImages.count)
-        print("vdl: dict", bedToPlantDict.count)
         
         mySegmentedControl.isEnabled = false
         // Do any additional setup after loading the view.
@@ -914,15 +1027,11 @@ class ViewController: UIViewController, UITableViewDelegate,
         }
         else {
             print("images saved")
-          
         }
         
         decodeTrailData()
         
         decodeTrailLocationData()
         
-        
-        
-
     }
 }
