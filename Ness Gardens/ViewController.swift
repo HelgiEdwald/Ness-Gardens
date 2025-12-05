@@ -439,7 +439,6 @@ class ViewController: UIViewController, UITableViewDelegate,
                         print("saved plants: ", self.corePlants.count)
                         self.populateBedToPlantDict(plantArray: self.corePlants)
                         self.addBedsToMap(bedArray: self.coreBeds)
-                        print("dict 2",self.bedToPlantDict.count)
 
                         self.updateTheTable()
                         
@@ -905,7 +904,6 @@ class ViewController: UIViewController, UITableViewDelegate,
         else {
             DispatchQueue.main.async {
                 print("plants saved")
-                self.populateBedToPlantDict(plantArray: self.corePlants)
                 self.plantsDecoded = true
             }
         }
@@ -930,7 +928,6 @@ class ViewController: UIViewController, UITableViewDelegate,
                 }
                 self.bedsDecoded = true
                 self.populateBedToPlantDict(plantArray: self.corePlants)
-                print("dict", self.bedToPlantDict.count)
                 self.addBedsToMap(bedArray: self.coreBeds)
                 
             }
@@ -942,6 +939,7 @@ class ViewController: UIViewController, UITableViewDelegate,
         }
         else {
             print("images saved")
+            imagesDecoded = true
         }
         
         decodeTrailData()
