@@ -34,7 +34,8 @@ class ViewController: UIViewController, UITableViewDelegate,
     var trailLocationList: trailLocatationRecords? = nil
     var allPlants: [Plant] = []
     var alivePlants: [Plant] = []
-    var bedArray: [Bed] = []
+    var bedArray: [CoreBed] = []
+    var bedsToSave: [Bed] = []
     var bedIdArray: [String] = []
     var bedToPlantDict: [String: [CorePlant]] = [:]
     var trailIdToLocationsDict: [String: [trailLocatation]] = [:]
@@ -59,7 +60,7 @@ class ViewController: UIViewController, UITableViewDelegate,
     
     //Core Data
     var corePlants: [CorePlant] = [] //Empty array to hold records fetched from CoreData
-    var plantsParsedFromCorePlants: [Plant] = []
+    var coreBeds: [CoreBed] = []
 
     //MARK: Map and Location
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
@@ -106,22 +107,21 @@ class ViewController: UIViewController, UITableViewDelegate,
         DispatchQueue.main.async {
             
             //create a new bed array that is sorted by proximity to user
-            let newSortedBedArray = self.sortBedArrayByProximity(arrayOfBeds: self.bedArray, userLatitude: latitude, userLongitude: longitude)
+            let newSortedBedArray = self.sortBedArrayByProximity(arrayOfBeds: self.coreBeds, userLatitude: latitude, userLongitude: longitude)
             var newBedIdArray: [String] = []
         
             //add bed id strings from elements from sorted bed arrray to new bedidarray to ensure no empty beds are in new array
             for bed in newSortedBedArray {
-                if self.bedToPlantDict[bed.bed_id] != nil {
-                    newBedIdArray.append(bed.bed_id)
+                if self.bedToPlantDict[bed.bed_id!] != nil {
+                    newBedIdArray.append(bed.bed_id!)
                 }
                 
             }
             
             self.bedIdArray = newBedIdArray
+            self.updateTheTable()
             
-            if self.bedsDecoded && self.plantsDecoded && self.imagesDecoded {
-                self.updateTheTable()
-            }
+            
         }
 
     }
@@ -167,15 +167,14 @@ class ViewController: UIViewController, UITableViewDelegate,
     func tableView(_ tableView: UITableView, titleForHeaderInSection
                                 section: Int) -> String? {
         //display name of bed in header
-//        if bedsDecoded {
-//            let bedNameString = bedList?.beds.first(where: {$0.bed_id == bedIdArray[section]})?.name ?? "no name"
-//            
-//            return "Bed: \(bedNameString)"
-//        }
-//        else {
-//            return ""
-//        }
-        return "Bed"
+        
+        let bedNameString = coreBeds.first(where: {$0.bed_id == bedIdArray[section]})?.name ?? "no name"
+            
+        return "Bed: \(bedNameString)"
+        
+        
+            
+        
     }
 
     // Create a standard footer that includes the returned text.
@@ -353,19 +352,24 @@ class ViewController: UIViewController, UITableViewDelegate,
                         //keep decoded data, add beds to bed array and their bed_id properties to string array
                         if let list = self.bedList {
                             for bed in list.beds {
+                                self.saveBedData(bedToSave: bed)
+                            }
+                            for bed in self.coreBeds {
                                 if self.bedArray.isEmpty {
                                     self.bedArray.insert(bed, at: 0)
                                 } else {
                                     self.bedArray.append(bed)
                                 }
                                 if self.bedIdArray.isEmpty {
-                                    self.bedIdArray.insert(bed.bed_id, at: 0)
+                                    self.bedIdArray.insert(bed.bed_id!, at: 0)
                                 } else {
-                                    self.bedIdArray.append(bed.bed_id)
+                                    self.bedIdArray.append(bed.bed_id!)
                                 }
                                 
                             }
+                            self.fetchBedData()
                             self.populateBedToPlantDict(plantArray: self.corePlants)
+                            self.addBedsToMap(bedArray: self.coreBeds)
                             self.updateTheTable()
                         }
                     }
@@ -419,8 +423,8 @@ class ViewController: UIViewController, UITableViewDelegate,
                         
                         self.fetchPlantData()
                         self.populateBedToPlantDict(plantArray: self.corePlants)
-                        print(self.corePlants.count, "cp")
-                        print(self.bedToPlantDict.count, "btpd")
+                        self.addBedsToMap(bedArray: self.coreBeds)
+                        print("dict",self.bedToPlantDict.count)
 
                         self.updateTheTable()
 
@@ -640,7 +644,44 @@ class ViewController: UIViewController, UITableViewDelegate,
         do {
             try managedContext.save()
             corePlants.append(savedPlant)
-            print("SAVED")
+            print("Saved plants", corePlants.count)
+            
+        } catch let error as NSError {
+            print("Could not save. \(error), \(error.userInfo)")
+        }
+    }
+    
+    func fetchBedData() {
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
+            return
+        }
+        let managedContext = appDelegate.persistentContainer.viewContext
+        let fetchRequest = NSFetchRequest<NSManagedObject>(entityName:"CoreBed")
+        do {
+            coreBeds = try managedContext.fetch(fetchRequest) as! [CoreBed]
+            
+        } catch let error as NSError {
+            print("Could not fetch. \(error), \(error.userInfo)")
+        }
+    }
+    
+    func saveBedData(bedToSave: Bed) {
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
+            return
+        }
+        let managedContext = appDelegate.persistentContainer.viewContext
+        let savedBed = NSEntityDescription.insertNewObject(forEntityName: "CoreBed", into: managedContext) as! CoreBed
+        
+        savedBed.bed_id = bedToSave.bed_id
+        savedBed.name = bedToSave.name
+        savedBed.latitude = bedToSave.latitude
+        savedBed.longitude = bedToSave.longitude
+        savedBed.last_modified = bedToSave.last_modified
+        
+        do {
+            try managedContext.save()
+            coreBeds.append(savedBed)
+            print("Saved beds", coreBeds.count)
         } catch let error as NSError {
             print("Could not save. \(error), \(error.userInfo)")
         }
@@ -694,13 +735,14 @@ class ViewController: UIViewController, UITableViewDelegate,
     }
 
     //function to add bed locations to map as annotations
-    func addBedsToMap(bedArray: [Bed]) {
-
+    func addBedsToMap(bedArray: [CoreBed]) {
+        
+        print("abtm", bedToPlantDict.count)
         for bed in bedArray {
             
             //filter out beds with no plants
-            if bedToPlantDict[bed.bed_id] != nil {
-                let coordinate = CLLocationCoordinate2D(latitude: Double(bed.latitude)! , longitude: Double(bed.longitude)!)
+            if bedToPlantDict[bed.bed_id!] != nil {
+                let coordinate = CLLocationCoordinate2D(latitude: Double(bed.latitude!)! , longitude: Double(bed.longitude!)!)
                 let annotation = MKPointAnnotation()
                 annotation.coordinate = coordinate
                 annotation.title = bed.name
@@ -712,13 +754,13 @@ class ViewController: UIViewController, UITableViewDelegate,
     }
     
     //function to sort a bed array by proximity to a locataion
-    func sortBedArrayByProximity(arrayOfBeds: [Bed], userLatitude: CLLocationDegrees, userLongitude: CLLocationDegrees) -> Array<Bed>{
+    func sortBedArrayByProximity(arrayOfBeds: [CoreBed], userLatitude: CLLocationDegrees, userLongitude: CLLocationDegrees) -> Array<CoreBed>{
         
         //new array where parametered array is sorted by distance to parametered user location
         let sortedBedArray = arrayOfBeds.sorted { (bed1, bed2) -> Bool in
             
-            let bed1location = CLLocation(latitude: Double(bed1.latitude)!, longitude: Double(bed1.longitude)!)
-            let bed2location = CLLocation(latitude: Double(bed2.latitude)!, longitude: Double(bed2.longitude)!)
+            let bed1location = CLLocation(latitude: Double(bed1.latitude!)!, longitude: Double(bed1.longitude!)!)
+            let bed2location = CLLocation(latitude: Double(bed2.latitude!)!, longitude: Double(bed2.longitude!)!)
             
             let userLocation = CLLocation(latitude: userLatitude, longitude: userLongitude)
             
@@ -746,9 +788,10 @@ class ViewController: UIViewController, UITableViewDelegate,
     override func viewDidLoad() {
         super.viewDidLoad()
         fetchPlantData()
-        populateBedToPlantDict(plantArray: self.corePlants)
-        print("vdl: ", corePlants.count)
-        print("vdl: ", bedToPlantDict.count)
+        fetchBedData()
+        print("vdl cp:", corePlants.count)
+        print("vdl cb:", coreBeds.count)
+        print("vdl: dict", bedToPlantDict.count)
         
         mySegmentedControl.isEnabled = false
         // Do any additional setup after loading the view.
@@ -774,33 +817,49 @@ class ViewController: UIViewController, UITableViewDelegate,
         myMap.showsUserLocation = true
         
         if corePlants.isEmpty {
+            print("no plants saved")
             decodePlantData()
         }
         
         else {
             DispatchQueue.main.async {
+                print("plants saved")
                 self.populateBedToPlantDict(plantArray: self.corePlants)
-                self.addBedsToMap(bedArray: self.bedArray)
+                
             }
         }
         
+        if coreBeds.isEmpty {
+            print("no beds saved")
+            decodeBedData()
+        } else {
+            DispatchQueue.main.async {
+                print("beds saved")
+                for bed in self.coreBeds {
+                    if self.bedArray.isEmpty {
+                        self.bedArray.insert(bed, at: 0)
+                    } else {
+                        self.bedArray.append(bed)
+                    }
+                    if self.bedIdArray.isEmpty {
+                        self.bedIdArray.insert(bed.bed_id!, at: 0)
+                    } else {
+                        self.bedIdArray.append(bed.bed_id!)
+                    }
+                }
+                self.populateBedToPlantDict(plantArray: self.corePlants)
+                print("dict", self.bedToPlantDict.count)
+                self.addBedsToMap(bedArray: self.coreBeds)
+            }
+        }
     
-        
-        //decode JSON data
-        decodeBedData()
-        
-        
-        
         decodeImageData()
         
         decodeTrailData()
         
         decodeTrailLocationData()
         
-        DispatchQueue.main.async {
-            self.populateBedToPlantDict(plantArray: self.corePlants)
-            self.addBedsToMap(bedArray: self.bedArray)
-        }
+        
         
 
     }
