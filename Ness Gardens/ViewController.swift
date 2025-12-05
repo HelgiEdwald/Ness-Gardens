@@ -916,7 +916,8 @@ class ViewController: UIViewController, UITableViewDelegate,
         
         //configure the map to show the user's location (with a blue dot).
         myMap.showsUserLocation = true
-        
+        myMap.mapType = MKMapType.satellite
+
         //check if arrays for plant, bed and image core data are empty, decode json data if they are
         if corePlants.isEmpty {
             print("no plants saved")
