@@ -185,7 +185,7 @@ class ViewController: UIViewController, UITableViewDelegate,
         }
     }
 
-    //configure and return cell
+    //configure and return custom cell
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         //cast to cell to custom tableview cell
