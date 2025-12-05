@@ -469,8 +469,11 @@ class ViewController: UIViewController, UITableViewDelegate,
     }
     
     func decodeImageData() {
+        
+        let lastModified = UserDefaults.standard.object(forKey: "lastTimeRan") as? String? ?? ""
+        
         //set up the URL
-        if let url = URL(string: "https://cgi.csc.liv.ac.uk/~phil/Teaching/COMP228/ness/data.php?class=images") {
+        if let url = URL(string: "https://cgi.csc.liv.ac.uk/~phil/Teaching/COMP228/ness/data.php?class=images&last_modified=\(lastModified)") {
             
             //create a URL session running on a background thread
             let session = URLSession.shared
@@ -749,22 +752,30 @@ class ViewController: UIViewController, UITableViewDelegate,
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
             return
         }
-        let managedContext = appDelegate.persistentContainer.viewContext
-        let savedImage = NSEntityDescription.insertNewObject(forEntityName: "CoreImage", into: managedContext) as! CoreImage
+        let context = appDelegate.persistentContainer.viewContext
+
+        // Look up existing image by recnum
+        let fetchRequest: NSFetchRequest<CoreImage> = CoreImage.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "img_file_name == %@", imageToSave.img_file_name)
+
+        let existing = (try? context.fetch(fetchRequest))?.first
+
+        let coreImage = existing ?? CoreImage(context: context)
         
-        savedImage.recnum = imageToSave.recnum
-        savedImage.imgid = imageToSave.imgid
-        savedImage.img_file_name = imageToSave.img_file_name
-        savedImage.imgtitle = imageToSave.imgtitle
-        savedImage.photodt = imageToSave.photodt
-        savedImage.copyOfImage = imageToSave.copy
-        savedImage.last_modified = imageToSave.last_modified
+        //update fields
+        coreImage.recnum = imageToSave.recnum
+        coreImage.imgid = imageToSave.imgid
+        coreImage.img_file_name = imageToSave.img_file_name
+        coreImage.imgtitle = imageToSave.imgtitle
+        coreImage.photodt = imageToSave.photodt
+        coreImage.copyOfImage = imageToSave.copy
+        coreImage.last_modified = imageToSave.last_modified
         
         do {
-            try managedContext.save()
-            coreImages.append(savedImage)
-        } catch let error as NSError {
-            print("Could not save. \(error), \(error.userInfo)")
+            try context.save()
+
+        } catch {
+            print("Error saving plant \(error)")
         }
     }
     
