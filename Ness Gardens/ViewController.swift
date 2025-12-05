@@ -345,10 +345,14 @@ class ViewController: UIViewController, UITableViewDelegate,
                         
                         //keep decoded data, add beds to bed array and their bed_id properties to string array
                         if let list = self.bedList {
+                            //save beds from list to core data
                             for bed in list.beds {
                                 self.saveBedData(bedToSave: bed)
                             }
+                            //fetch beds from core data
                             self.fetchBedData()
+                            
+                            //add beds from core data to arrays
                             for bed in self.coreBeds {
                                 if self.bedArray.isEmpty {
                                     self.bedArray.insert(bed, at: 0)
@@ -363,10 +367,8 @@ class ViewController: UIViewController, UITableViewDelegate,
                                 
                             }
                             print("saved beds: ", self.coreBeds.count)
-
-                            self.populateBedToPlantDict(plantArray: self.corePlants)
+                            
                             self.addBedsToMap(bedArray: self.coreBeds)
-                            print("dict",self.bedToPlantDict.count)
                             self.updateTheTable()
                             
                             //grab todays date in YYYY-MM-DD, store in UD
@@ -421,7 +423,8 @@ class ViewController: UIViewController, UITableViewDelegate,
                         if let list = self.plantList {
                             
                             self.filterOutDeadPlants(list: list)
-                                                        
+                            
+                            //add plants to core data
                             for plant in self.alivePlants {
                                 
                                 self.savePlantData(plantToSave: plant)
@@ -430,12 +433,13 @@ class ViewController: UIViewController, UITableViewDelegate,
                             
                         }
                         
+                        //fetch plants from core data
                         self.fetchPlantData()
                         
                         print("saved plants: ", self.corePlants.count)
                         self.populateBedToPlantDict(plantArray: self.corePlants)
                         self.addBedsToMap(bedArray: self.coreBeds)
-                        print("dict",self.bedToPlantDict.count)
+                        print("dict 2",self.bedToPlantDict.count)
 
                         self.updateTheTable()
                         

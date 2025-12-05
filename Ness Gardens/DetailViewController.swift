@@ -201,7 +201,9 @@ class DetailViewController: UIViewController {
             
             let region = MKCoordinateRegion(center: coordinate, span: span)
             plantMapView.setRegion(region, animated: true)
+            
         }
+        
         else {
             plantMapView.isHidden = true
             plantMapView.frame.size.width = 0
