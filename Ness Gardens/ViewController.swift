@@ -48,7 +48,7 @@ class ViewController: UIViewController, UITableViewDelegate,
     //Booleans to check if JSON data has been decoded
     var bedsDecoded = false
     var plantsDecoded = false
-    var imagesDecoded = true
+    var imagesDecoded = false
     var trailsDecoded = false
     var trailLocationsDecoded = false
     
@@ -61,6 +61,7 @@ class ViewController: UIViewController, UITableViewDelegate,
     //Core Data
     var corePlants: [CorePlant] = [] //Empty array to hold records fetched from CoreData
     var coreBeds: [CoreBed] = []
+    var coreImages: [CoreImage] = []
 
     //MARK: Map and Location
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
@@ -234,7 +235,7 @@ class ViewController: UIViewController, UITableViewDelegate,
         }
         
         //set thumbnail image to image loaded from url with the cellplant's image file name found in the decoded image data
-        let imageFileName = imageList?.images.first(where: { $0.recnum == cellPlant.recnum })?.img_file_name ?? ""
+        let imageFileName = coreImages.first(where: { $0.recnum == cellPlant.recnum })?.img_file_name ?? ""
         let urlString = "https://cgi.csc.liv.ac.uk/~phil/Teaching/COMP228/ness_thumbnails/\(imageFileName)"
         let url = URL(string: urlString)!
         cell.thumbnailImageView.load(url:url)
@@ -252,7 +253,7 @@ class ViewController: UIViewController, UITableViewDelegate,
         
         //set empty variables to selected plant's structure and image file names
         selectedPlant = cellPlant
-        selectedImageFileNameArray = imageList?.images.filter({$0.recnum == selectedPlant?.recnum}).map(\.img_file_name) ?? []
+        selectedImageFileNameArray = coreImages.filter({$0.recnum == selectedPlant?.recnum}).map(\.img_file_name!)
                 
         performSegue(withIdentifier: "toDetail", sender: cellPlant)
         
@@ -465,10 +466,15 @@ class ViewController: UIViewController, UITableViewDelegate,
                     self.imageList = imageData
                     self.imagesDecoded = true
                     
-                    if self.bedsDecoded && self.plantsDecoded && self.imagesDecoded {
-                        DispatchQueue.main.async {
-                            self.updateTheTable()
+                    if let list = self.imageList {
+                        for image in list.images {
+                            DispatchQueue.main.async {
+                                self.saveImageData(imageToSave: image)
+                            }
                         }
+                    }
+                    DispatchQueue.main.async {
+                        self.fetchImageData()
                     }
                     
                     
@@ -687,6 +693,44 @@ class ViewController: UIViewController, UITableViewDelegate,
         }
     }
     
+    func fetchImageData() {
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
+            return
+        }
+        let managedContext = appDelegate.persistentContainer.viewContext
+        let fetchRequest = NSFetchRequest<NSManagedObject>(entityName:"CoreImage")
+        do {
+            coreImages = try managedContext.fetch(fetchRequest) as! [CoreImage]
+            
+        } catch let error as NSError {
+            print("Could not fetch. \(error), \(error.userInfo)")
+        }
+    }
+    
+    func saveImageData (imageToSave: Image) {
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
+            return
+        }
+        let managedContext = appDelegate.persistentContainer.viewContext
+        let savedImage = NSEntityDescription.insertNewObject(forEntityName: "CoreImage", into: managedContext) as! CoreImage
+        
+        savedImage.recnum = imageToSave.recnum
+        savedImage.imgid = imageToSave.imgid
+        savedImage.img_file_name = imageToSave.img_file_name
+        savedImage.imgtitle = imageToSave.imgtitle
+        savedImage.photodt = imageToSave.photodt
+        savedImage.copyOfImage = imageToSave.copy
+        savedImage.last_modified = imageToSave.last_modified
+        
+        do {
+            try managedContext.save()
+            coreImages.append(savedImage)
+            print("Saved images", coreImages.count)
+        } catch let error as NSError {
+            print("Could not save. \(error), \(error.userInfo)")
+        }
+    }
+    
     //MARK: Helper Functions
     
     //function to add plants to total array and to filtered array if they are still present and alive in Ness Gardens
@@ -784,13 +828,22 @@ class ViewController: UIViewController, UITableViewDelegate,
         myMap.addOverlay(polyline)
     }
     
+    //function to save image data on main thread
+    func saveImageDataOnMain(image: Image) {
+        DispatchQueue.main.async {
+            self.saveImageData(imageToSave: image )
+        }
+    }
+    
     //MARK: View related stuff
     override func viewDidLoad() {
         super.viewDidLoad()
         fetchPlantData()
         fetchBedData()
+        fetchImageData()
         print("vdl cp:", corePlants.count)
         print("vdl cb:", coreBeds.count)
+        print("vdl ci:", coreImages.count)
         print("vdl: dict", bedToPlantDict.count)
         
         mySegmentedControl.isEnabled = false
@@ -825,7 +878,7 @@ class ViewController: UIViewController, UITableViewDelegate,
             DispatchQueue.main.async {
                 print("plants saved")
                 self.populateBedToPlantDict(plantArray: self.corePlants)
-                
+                self.plantsDecoded = true
             }
         }
         
@@ -847,13 +900,22 @@ class ViewController: UIViewController, UITableViewDelegate,
                         self.bedIdArray.append(bed.bed_id!)
                     }
                 }
+                self.bedsDecoded = true
                 self.populateBedToPlantDict(plantArray: self.corePlants)
                 print("dict", self.bedToPlantDict.count)
                 self.addBedsToMap(bedArray: self.coreBeds)
+                
             }
         }
-    
-        decodeImageData()
+        
+        if coreImages.isEmpty {
+            print("No images saved")
+            decodeImageData()
+        }
+        else {
+            print("images saved")
+          
+        }
         
         decodeTrailData()
         
