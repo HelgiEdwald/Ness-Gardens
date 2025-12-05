@@ -7,6 +7,7 @@
 
 import MapKit
 import UIKit
+import CoreData
 
 class ViewController: UIViewController, UITableViewDelegate,
     UITableViewDataSource, MKMapViewDelegate, CLLocationManagerDelegate
@@ -320,7 +321,7 @@ class ViewController: UIViewController, UITableViewDelegate,
         
     }
     
-    //MARK: Decoding JSON data
+    //MARK: Decode JSON Data
     
     func decodeBedData() {
         
@@ -576,7 +577,65 @@ class ViewController: UIViewController, UITableViewDelegate,
         
     }
     
-    //MARK: helper functions
+    //MARK: Core Data Functions
+    
+    func fetchPlantData() {
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
+            return
+        }
+        let managedContext = appDelegate.persistentContainer.viewContext
+        let fetchRequest = NSFetchRequest<NSManagedObject>(entityName:"CorePlant")
+        do {
+            corePlants = try managedContext.fetch(fetchRequest) as! [CorePlant]
+        } catch let error as NSError {
+            print("Could not fetch. \(error), \(error.userInfo)")
+        }
+    }
+    
+    func savePlantData(plantToSave: Plant) {
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
+            return
+        }
+        let managedContext = appDelegate.persistentContainer.viewContext
+        let savedPlant = NSEntityDescription.insertNewObject(forEntityName: "CorePlant", into: managedContext) as! CorePlant
+        
+        savedPlant.recnum = plantToSave.recnum
+        savedPlant.acid = plantToSave.acid
+        savedPlant.accsta = plantToSave.accsta
+        savedPlant.family = plantToSave.family
+        savedPlant.genus = plantToSave.genus
+        savedPlant.species = plantToSave.species
+        savedPlant.infraspecificEpithet = plantToSave.infraspecificEpithet
+        savedPlant.vernacularName = plantToSave.vernacularName
+        savedPlant.cultivarName = plantToSave.cultivarName
+        savedPlant.donor = plantToSave.donor
+        savedPlant.latitude = plantToSave.latitude
+        savedPlant.longitude = plantToSave.longitude
+        savedPlant.country = plantToSave.country
+        savedPlant.iso = plantToSave.iso
+        savedPlant.sgu = plantToSave.sgu
+        savedPlant.loc = plantToSave.loc
+        savedPlant.alt = plantToSave.alt
+        savedPlant.cnam = plantToSave.cnam
+        savedPlant.cid = plantToSave.cid
+        savedPlant.cdat = plantToSave.cdat
+        savedPlant.bed = plantToSave.bed
+        savedPlant.memoriam = plantToSave.memoriam
+        if let redlist = plantToSave.redlist {
+            savedPlant.redlist = plantToSave.redlist
+        }
+        savedPlant.last_modified = plantToSave.last_modified
+        
+        do {
+            try managedContext.save()
+            corePlants.append(savedPlant)
+            print("SAVED")
+        } catch let error as NSError {
+            print("Could not save. \(error), \(error.userInfo)")
+        }
+    }
+    
+    //MARK: Helper Functions
     
     //function to add plants to total array and to filtered array if they are still present and alive in Ness Gardens
     func filterOutDeadPlants(list: plantRecords) {
