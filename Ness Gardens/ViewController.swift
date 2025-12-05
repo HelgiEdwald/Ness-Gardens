@@ -36,7 +36,7 @@ class ViewController: UIViewController, UITableViewDelegate,
     var alivePlants: [Plant] = []
     var bedArray: [Bed] = []
     var bedIdArray: [String] = []
-    var bedToPlantDict: [String: [Plant]] = [:]
+    var bedToPlantDict: [String: [CorePlant]] = [:]
     var trailIdToLocationsDict: [String: [trailLocatation]] = [:]
     
     var trailArray: [Trail] = []
@@ -52,13 +52,14 @@ class ViewController: UIViewController, UITableViewDelegate,
     var trailLocationsDecoded = false
     
     //Variables to pass along to detail view controller
-    var selectedPlant: Plant?
+    var selectedPlant: CorePlant?
     var selectedPlantImage: UIImage?
     var selectedPlantImageFileName: String?
     var selectedImageFileNameArray: [String] = []
     
     //Core Data
     var corePlants: [CorePlant] = [] //Empty array to hold records fetched from CoreData
+    var plantsParsedFromCorePlants: [Plant] = []
 
     //MARK: Map and Location
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
@@ -166,14 +167,15 @@ class ViewController: UIViewController, UITableViewDelegate,
     func tableView(_ tableView: UITableView, titleForHeaderInSection
                                 section: Int) -> String? {
         //display name of bed in header
-        if bedsDecoded {
-            let bedNameString = bedList?.beds.first(where: {$0.bed_id == bedIdArray[section]})?.name ?? "no name"
-            
-            return "Bed: \(bedNameString)"
-        }
-        else {
-            return ""
-        }
+//        if bedsDecoded {
+//            let bedNameString = bedList?.beds.first(where: {$0.bed_id == bedIdArray[section]})?.name ?? "no name"
+//            
+//            return "Bed: \(bedNameString)"
+//        }
+//        else {
+//            return ""
+//        }
+        return "Bed"
     }
 
     // Create a standard footer that includes the returned text.
@@ -181,12 +183,13 @@ class ViewController: UIViewController, UITableViewDelegate,
                                 section: Int) -> String? {
         
         //display name of bed in footer
-        if bedsDecoded {
-            let bedNameString = bedList?.beds.first(where: {$0.bed_id == bedIdArray[section]})?.name ?? "no name"
-            return "Bed: \(bedNameString)"
-        } else {
-            return ""
-        }
+//        if bedsDecoded {
+//            let bedNameString = bedList?.beds.first(where: {$0.bed_id == bedIdArray[section]})?.name ?? "no name"
+//            return "Bed: \(bedNameString)"
+//        } else {
+//            return ""
+//        }
+        return "Bed"
     }
 
     //configure and return custom cell
@@ -362,6 +365,7 @@ class ViewController: UIViewController, UITableViewDelegate,
                                 }
                                 
                             }
+                            self.populateBedToPlantDict(plantArray: self.corePlants)
                             self.updateTheTable()
                         }
                     }
@@ -406,20 +410,17 @@ class ViewController: UIViewController, UITableViewDelegate,
                         if let list = self.plantList {
                             
                             self.filterOutDeadPlants(list: list)
-                            self.populateBedToPlantDict()
-                            self.addBedsToMap(bedArray: self.bedArray)
-                            
-                            if self.corePlants.isEmpty {
-                                for plant in self.alivePlants {
-                                    self.savePlantData(plantToSave: plant)
-                                }
+                                                        
+                            for plant in self.alivePlants {
+                                self.savePlantData(plantToSave: plant)
                             }
-                            else {
-                                print(self.corePlants.count)
-                            }
-                            
                             
                         }
+                        
+                        self.fetchPlantData()
+                        self.populateBedToPlantDict(plantArray: self.corePlants)
+                        print(self.corePlants.count, "cp")
+                        print(self.bedToPlantDict.count, "btpd")
 
                         self.updateTheTable()
 
@@ -669,9 +670,9 @@ class ViewController: UIViewController, UITableViewDelegate,
     }
     
     //function to populate a dictionary used for the table view so where beds are mapped to all the plants in that bed
-    func populateBedToPlantDict() {
+    func populateBedToPlantDict(plantArray: [CorePlant]) {
         
-        for aPlant in self.alivePlants {
+        for aPlant in plantArray {
             let bedList = aPlant.bed ?? ""
             let bedArray = bedList.components(
                 separatedBy: .whitespaces
@@ -745,6 +746,9 @@ class ViewController: UIViewController, UITableViewDelegate,
     override func viewDidLoad() {
         super.viewDidLoad()
         fetchPlantData()
+        populateBedToPlantDict(plantArray: self.corePlants)
+        print("vdl: ", corePlants.count)
+        print("vdl: ", bedToPlantDict.count)
         
         mySegmentedControl.isEnabled = false
         // Do any additional setup after loading the view.
@@ -769,10 +773,23 @@ class ViewController: UIViewController, UITableViewDelegate,
         //configure the map to show the user's location (with a blue dot).
         myMap.showsUserLocation = true
         
+        if corePlants.isEmpty {
+            decodePlantData()
+        }
+        
+        else {
+            DispatchQueue.main.async {
+                self.populateBedToPlantDict(plantArray: self.corePlants)
+                self.addBedsToMap(bedArray: self.bedArray)
+            }
+        }
+        
+    
+        
         //decode JSON data
         decodeBedData()
         
-        decodePlantData()
+        
         
         decodeImageData()
         
@@ -780,7 +797,10 @@ class ViewController: UIViewController, UITableViewDelegate,
         
         decodeTrailLocationData()
         
-        
+        DispatchQueue.main.async {
+            self.populateBedToPlantDict(plantArray: self.corePlants)
+            self.addBedsToMap(bedArray: self.bedArray)
+        }
         
 
     }

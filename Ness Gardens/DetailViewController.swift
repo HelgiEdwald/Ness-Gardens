@@ -20,7 +20,7 @@ class DetailViewController: UIViewController {
     @IBOutlet weak var nextImageButton: UIButton!
     
     //variables
-    var plantReceived: Plant?
+    var plantReceived: CorePlant?
     var selectedPlantImage: UIImage?
     var receivedImageFileNameArray: [String] = []
     
