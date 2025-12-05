@@ -319,6 +319,8 @@ class ViewController: UIViewController, UITableViewDelegate,
     //MARK: Decode JSON Data
     
     func decodeBedData() {
+        
+        //get last time program was run
         let lastModified = UserDefaults.standard.object(forKey: "lastTimeRan") as? String? ?? ""
         
         //set up the URL
@@ -366,9 +368,8 @@ class ViewController: UIViewController, UITableViewDelegate,
                                 }
                                 
                             }
-                            print("saved beds: ", self.coreBeds.count)
-                            
-                            self.addBedsToMap(bedArray: self.coreBeds)
+
+                            //call helper function
                             self.updateTheTable()
                             
                             //grab todays date in YYYY-MM-DD, store in UD
@@ -395,7 +396,7 @@ class ViewController: UIViewController, UITableViewDelegate,
 
     func decodePlantData() {
 
-        
+        //get last time program was run
         let lastModified = UserDefaults.standard.object(forKey: "lastTimeRan") as? String? ?? ""
             
         //set up the URL
@@ -436,10 +437,9 @@ class ViewController: UIViewController, UITableViewDelegate,
                         //fetch plants from core data
                         self.fetchPlantData()
                         
-                        print("saved plants: ", self.corePlants.count)
+                        //call helper functions
                         self.populateBedToPlantDict(plantArray: self.corePlants)
                         self.addBedsToMap(bedArray: self.coreBeds)
-
                         self.updateTheTable()
                         
                         //grab todays date in YYYY-MM-DD, store in UD
@@ -465,6 +465,7 @@ class ViewController: UIViewController, UITableViewDelegate,
     
     func decodeImageData() {
         
+        //get last time program was run
         let lastModified = UserDefaults.standard.object(forKey: "lastTimeRan") as? String? ?? ""
         
         //set up the URL
@@ -492,14 +493,15 @@ class ViewController: UIViewController, UITableViewDelegate,
                     if let list = self.imageList {
                         for image in list.images {
                             DispatchQueue.main.async {
+                                //store decoded data in core data
                                 self.saveImageData(imageToSave: image)
                             }
                         }
                     }
                     
                     DispatchQueue.main.async {
+                        //fetch data from core data
                         self.fetchImageData()
-                        print("Saved images", self.coreImages.count)
                     }
 
                     
