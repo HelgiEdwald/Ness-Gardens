@@ -186,6 +186,7 @@ class DetailViewController: UIViewController {
 
         //show map view with annotation if received plant has non-nil latitude
         if let lat = plantReceived?.latitude, !lat.isEmpty {
+            
             let span = MKCoordinateSpan(latitudeDelta: 10, longitudeDelta: 10)
             guard let lon = plantReceived?.longitude else { return }
             guard let latitude = Double(lat) else { return }
@@ -203,6 +204,7 @@ class DetailViewController: UIViewController {
         }
         else {
             plantMapView.isHidden = true
+            plantMapView.frame.size.width = 0
         }
         
     }

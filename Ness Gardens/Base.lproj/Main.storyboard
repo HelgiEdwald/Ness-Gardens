@@ -135,32 +135,60 @@
                         <rect key="frame" x="0.0" y="0.0" width="402" height="874"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" adjustsImageSizeForAccessibilityContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Ake-Hv-WsB">
-                                <rect key="frame" x="16" y="380" width="370" height="301"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" adjustsImageSizeForAccessibilityContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Ake-Hv-WsB">
+                                <rect key="frame" x="16" y="377" width="370" height="284"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="284" id="22V-br-dcM"/>
+                                </constraints>
                             </imageView>
-                            <button opaque="NO" contentMode="scaleAspectFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="VYr-31-RbL">
-                                <rect key="frame" x="16" y="62.666666666666629" width="69" height="58"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <button opaque="NO" contentMode="scaleAspectFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="VYr-31-RbL">
+                                <rect key="frame" x="44" y="80.666666666666671" width="13" height="22"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="13" id="CJE-BV-LWF"/>
+                                    <constraint firstAttribute="height" constant="22" id="Fam-bv-kVj"/>
+                                </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="18"/>
                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                <state key="normal" backgroundImage="chevron.backward.circle" catalog="system"/>
+                                <state key="normal" image="chevron.left" catalog="system"/>
                                 <connections>
                                     <action selector="backButtonPressed:" destination="PGd-A3-mHQ" eventType="touchUpInside" id="Cwo-Qp-PDm"/>
                                     <segue destination="1xI-d1-UWQ" kind="unwind" identifier="unwindToMain" unwindAction="unwindToMainView:" id="4RJ-UQ-ETj"/>
                                 </connections>
                             </button>
-                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" editable="NO" text="Plant Information" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="e5Z-EI-FM0">
-                                <rect key="frame" x="16" y="133" width="219" height="239"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                                <color key="textColor" systemColor="labelColor"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="21"/>
-                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
-                            </textView>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hbZ-2W-hkm">
+                            <stackView opaque="NO" contentMode="scaleToFill" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="akl-nK-VnX">
+                                <rect key="frame" x="16" y="133" width="370" height="239"/>
+                                <subviews>
+                                    <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" text="Plant Information" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="e5Z-EI-FM0">
+                                        <rect key="frame" x="0.0" y="0.0" width="219" height="239"/>
+                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="239" id="rD8-1i-VVf"/>
+                                        </constraints>
+                                        <color key="textColor" systemColor="labelColor"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="21"/>
+                                        <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                                    </textView>
+                                    <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="4dX-SG-5aD">
+                                        <rect key="frame" x="227" y="0.0" width="143" height="239"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="143" id="KX9-ky-2ww"/>
+                                        </constraints>
+                                        <standardMapConfiguration key="preferredConfiguration"/>
+                                    </mapView>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="trailing" secondItem="4dX-SG-5aD" secondAttribute="trailing" id="5RF-AX-F2e"/>
+                                    <constraint firstAttribute="height" constant="239" id="JNo-Fy-8WS"/>
+                                    <constraint firstItem="4dX-SG-5aD" firstAttribute="top" secondItem="akl-nK-VnX" secondAttribute="top" id="f8a-dS-xpB"/>
+                                    <constraint firstAttribute="bottom" secondItem="4dX-SG-5aD" secondAttribute="bottom" id="g5B-ST-Ao4"/>
+                                </constraints>
+                            </stackView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hbZ-2W-hkm">
                                 <rect key="frame" x="16" y="689" width="69" height="74"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="74" id="ZcH-Ky-nvk"/>
+                                    <constraint firstAttribute="width" constant="69" id="lpk-fM-CuP"/>
+                                </constraints>
                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                 <state key="normal" image="arrow.left" catalog="system"/>
                                 <connections>
@@ -176,14 +204,21 @@
                                     <action selector="nextImageButtonTapped:" destination="PGd-A3-mHQ" eventType="touchUpInside" id="WjB-30-hOV"/>
                                 </connections>
                             </button>
-                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="4dX-SG-5aD">
-                                <rect key="frame" x="243" y="133" width="143" height="109"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <standardMapConfiguration key="preferredConfiguration"/>
-                            </mapView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="SHr-sb-SfH"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="VYr-31-RbL" firstAttribute="leading" secondItem="SHr-sb-SfH" secondAttribute="leading" constant="44" id="5t2-fg-fAx"/>
+                            <constraint firstItem="VYr-31-RbL" firstAttribute="top" secondItem="SHr-sb-SfH" secondAttribute="top" constant="18.670000000000002" id="Ijj-2D-Ama"/>
+                            <constraint firstItem="SHr-sb-SfH" firstAttribute="trailing" secondItem="akl-nK-VnX" secondAttribute="trailing" constant="16" id="OR2-Cl-EW2"/>
+                            <constraint firstItem="Ake-Hv-WsB" firstAttribute="leading" secondItem="SHr-sb-SfH" secondAttribute="leading" constant="16" id="Ujt-Cq-cAy"/>
+                            <constraint firstItem="hbZ-2W-hkm" firstAttribute="top" secondItem="Ake-Hv-WsB" secondAttribute="bottom" constant="28" id="arx-lK-0rK"/>
+                            <constraint firstItem="hbZ-2W-hkm" firstAttribute="leading" secondItem="SHr-sb-SfH" secondAttribute="leading" constant="16" id="eZD-pg-HLk"/>
+                            <constraint firstItem="akl-nK-VnX" firstAttribute="top" secondItem="VYr-31-RbL" secondAttribute="bottom" constant="30.329999999999998" id="qH5-Zg-zIG"/>
+                            <constraint firstItem="SHr-sb-SfH" firstAttribute="trailing" secondItem="Ake-Hv-WsB" secondAttribute="trailing" constant="16" id="re6-0k-Hsb"/>
+                            <constraint firstItem="Ake-Hv-WsB" firstAttribute="top" secondItem="akl-nK-VnX" secondAttribute="bottom" constant="5" id="rm7-aW-vqe"/>
+                            <constraint firstItem="akl-nK-VnX" firstAttribute="leading" secondItem="SHr-sb-SfH" secondAttribute="leading" constant="16" id="wLi-dT-6rf"/>
+                        </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="psu-eO-nXp"/>
                     <connections>
@@ -203,7 +238,7 @@
     <resources>
         <image name="arrow.left" catalog="system" width="128" height="95"/>
         <image name="arrow.right" catalog="system" width="128" height="95"/>
-        <image name="chevron.backward.circle" catalog="system" width="128" height="123"/>
+        <image name="chevron.left" catalog="system" width="97" height="128"/>
         <image name="questionmark.app" catalog="system" width="128" height="114"/>
         <image name="square.and.arrow.up" catalog="system" width="110" height="128"/>
         <systemColor name="labelColor">

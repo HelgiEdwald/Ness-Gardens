@@ -13,7 +13,7 @@ class ViewController: UIViewController, UITableViewDelegate,
     UITableViewDataSource, MKMapViewDelegate, CLLocationManagerDelegate
 {
     
-    //MARK: Initialising Variables
+    //MARK: Variables
     
     //outlets
     @IBOutlet weak var myTable: UITableView!
@@ -26,23 +26,22 @@ class ViewController: UIViewController, UITableViewDelegate,
     var startTrackingTheUser = false
     var userLocation = CLLocationCoordinate2D(latitude: 0.0, longitude: 0.0)
     
-    //variables to populate with decoded json data
+    //lists to populate with decoded json data
     var bedList: bedRecords? = nil
     var plantList: plantRecords? = nil
     var imageList: imageRecords? = nil
     var trailList: trailRecords? = nil
     var trailLocationList: trailLocatationRecords? = nil
-    var allPlants: [Plant] = []
+    
+    //arrays for json data
     var alivePlants: [Plant] = []
     var bedArray: [CoreBed] = []
-    var bedsToSave: [Bed] = []
     var bedIdArray: [String] = []
-    var bedToPlantDict: [String: [CorePlant]] = [:]
-    var trailIdToLocationsDict: [String: [trailLocatation]] = [:]
-    
     var trailArray: [Trail] = []
     var trailLocationArray: [trailLocatation] = []
     
+    //dictionaries
+    var bedToPlantDict: [String: [CorePlant]] = [:]
     var trailCoordinateDict: [String:[CLLocationCoordinate2D]] = [:]
     
     //Booleans to check if JSON data has been decoded
@@ -172,9 +171,6 @@ class ViewController: UIViewController, UITableViewDelegate,
         let bedNameString = coreBeds.first(where: {$0.bed_id == bedIdArray[section]})?.name ?? "no name"
             
         return "Bed: \(bedNameString)"
-        
-        
-            
         
     }
 
@@ -780,11 +776,6 @@ class ViewController: UIViewController, UITableViewDelegate,
     func filterOutDeadPlants(list: plantRecords) {
         
         for plant in list.plants {
-            if self.allPlants.isEmpty {
-                self.allPlants.insert(plant, at: 0)
-            } else {
-                self.allPlants.append(plant)
-            }
             if plant.accsta == "C" {
                 if self.alivePlants.isEmpty {
                     self.alivePlants.insert(plant, at: 0)
