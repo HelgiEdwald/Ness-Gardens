@@ -543,11 +543,8 @@ class ViewController: UIViewController, UITableViewDelegate,
                         if let list = self.trailList {
                             
                             for trail in list.trails {
-                                
                                 self.trailArray.append(trail)
-                                
                             }
-                            
                             
                         }
 
@@ -593,7 +590,7 @@ class ViewController: UIViewController, UITableViewDelegate,
 
                         if let list = self.trailLocationList {
                           
-                            //set values in coordinate dictionary to coordinates made from trail location lats and lons with trail id as keys
+                            //set values in coordinate dictionary to coordinates made from trail location lats and lons with trail ids as keys
                             for trail_location in list.trail_locations {
                                 if self.trailCoordinateDict[trail_location.Trail_ID] == nil {
                                     self.trailCoordinateDict[trail_location.Trail_ID] = [CLLocationCoordinate2D(latitude: Double(trail_location.Latitude)!, longitude: Double(trail_location.Longitude)!)]
@@ -628,6 +625,7 @@ class ViewController: UIViewController, UITableViewDelegate,
     //MARK: Core Data Functions
     
     func fetchPlantData() {
+        
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
             return
         }
@@ -638,9 +636,12 @@ class ViewController: UIViewController, UITableViewDelegate,
         } catch let error as NSError {
             print("Could not fetch. \(error), \(error.userInfo)")
         }
+        
     }
     
     func savePlantData(plantToSave: Plant) {
+        
+        //look up an existing plant in core data, if it exists: update its fields, if it does not, save new plant
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
             return
         }
@@ -686,9 +687,11 @@ class ViewController: UIViewController, UITableViewDelegate,
         } catch {
             print("Error saving plant \(error)")
         }
+        
     }
     
     func fetchBedData() {
+        
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
             return
         }
@@ -700,9 +703,12 @@ class ViewController: UIViewController, UITableViewDelegate,
         } catch let error as NSError {
             print("Could not fetch. \(error), \(error.userInfo)")
         }
+        
     }
         
     func saveBedData(bedToSave: Bed) {
+        
+        //look up an existing bed in core data, if it exists: update its fields, if it does not, save new bed
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
             return
         }
@@ -727,9 +733,11 @@ class ViewController: UIViewController, UITableViewDelegate,
         } catch {
             print("Error saving plant \(error)")
         }
+        
     }
     
     func fetchImageData() {
+        
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
             return
         }
@@ -741,9 +749,12 @@ class ViewController: UIViewController, UITableViewDelegate,
         } catch let error as NSError {
             print("Could not fetch. \(error), \(error.userInfo)")
         }
+        
     }
     
     func saveImageData (imageToSave: Image) {
+        
+        //look up an existing image in core data, if it exists: update its fields, if it does not, save new image
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
             return
         }
@@ -772,6 +783,7 @@ class ViewController: UIViewController, UITableViewDelegate,
         } catch {
             print("Error saving plant \(error)")
         }
+        
     }
     
     //MARK: Helper Functions
@@ -855,28 +867,33 @@ class ViewController: UIViewController, UITableViewDelegate,
     
     //function to reload table data
     func updateTheTable() {
+        
             myTable.reloadData()
+        
         }
     
     //function to draw trail
     func drawTrail(coordinateArray: [CLLocationCoordinate2D]) {
+        
         myMap.removeOverlays(myMap.overlays)
         let polyline = MKPolyline(coordinates: coordinateArray, count: coordinateArray.count)
         myMap.addOverlay(polyline)
+        
     }
     
     //MARK: View related stuff
     override func viewDidLoad() {
+        
         super.viewDidLoad()
+        // Do any additional setup after loading the view.
+        
+        //fetch data from core data
         fetchPlantData()
         fetchBedData()
         fetchImageData()
-        print("vdl cp:", corePlants.count)
-        print("vdl cb:", coreBeds.count)
-        print("vdl ci:", coreImages.count)
         
+        //disable segmented control as trails may not be decoded yet
         mySegmentedControl.isEnabled = false
-        // Do any additional setup after loading the view.
         
         // Make this view controller a delegate of the Location Manager, so that it
         //is able to call functions provided in this view controller.
@@ -898,6 +915,7 @@ class ViewController: UIViewController, UITableViewDelegate,
         //configure the map to show the user's location (with a blue dot).
         myMap.showsUserLocation = true
         
+        //check if arrays for plant, bed and image core data are empty, decode json data if they are
         if corePlants.isEmpty {
             print("no plants saved")
             decodePlantData()
