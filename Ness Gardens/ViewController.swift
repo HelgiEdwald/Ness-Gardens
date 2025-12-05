@@ -409,6 +409,16 @@ class ViewController: UIViewController, UITableViewDelegate,
                             self.populateBedToPlantDict()
                             self.addBedsToMap(bedArray: self.bedArray)
                             
+                            if self.corePlants.isEmpty {
+                                for plant in self.alivePlants {
+                                    self.savePlantData(plantToSave: plant)
+                                }
+                            }
+                            else {
+                                print(self.corePlants.count)
+                            }
+                            
+                            
                         }
 
                         self.updateTheTable()
@@ -621,7 +631,7 @@ class ViewController: UIViewController, UITableViewDelegate,
         savedPlant.cdat = plantToSave.cdat
         savedPlant.bed = plantToSave.bed
         savedPlant.memoriam = plantToSave.memoriam
-        if let redlist = plantToSave.redlist {
+        if plantToSave.redlist != nil {
             savedPlant.redlist = plantToSave.redlist
         }
         savedPlant.last_modified = plantToSave.last_modified
@@ -728,44 +738,49 @@ class ViewController: UIViewController, UITableViewDelegate,
     func drawTrail(coordinateArray: [CLLocationCoordinate2D]) {
         myMap.removeOverlays(myMap.overlays)
         let polyline = MKPolyline(coordinates: coordinateArray, count: coordinateArray.count)
-        print("polyline", polyline)
-        print("arrayLength: ", coordinateArray.count)
         myMap.addOverlay(polyline)
     }
     
     //MARK: View related stuff
     override func viewDidLoad() {
         super.viewDidLoad()
+        fetchPlantData()
         
         mySegmentedControl.isEnabled = false
         // Do any additional setup after loading the view.
-
+        
         // Make this view controller a delegate of the Location Manager, so that it
         //is able to call functions provided in this view controller.
         locationManager.delegate = self as CLLocationManagerDelegate
-
+        
         //set the level of accuracy for the user's location.
         locationManager.desiredAccuracy = kCLLocationAccuracyBestForNavigation
-
+        
         //Ask the location manager to request authorisation from the user. Note that this
         //only happens once if the user selects the "when in use" option. If the user
         //denies access, then your app will not be provided with details of the user's
         //location.
         locationManager.requestWhenInUseAuthorization()
-
+        
         //Once the user's location is being provided then ask for updates when the user
         //moves around.
         locationManager.startUpdatingLocation()
-
+        
         //configure the map to show the user's location (with a blue dot).
         myMap.showsUserLocation = true
-
+        
         //decode JSON data
         decodeBedData()
+        
         decodePlantData()
+        
         decodeImageData()
+        
         decodeTrailData()
+        
         decodeTrailLocationData()
+        
+        
         
 
     }
