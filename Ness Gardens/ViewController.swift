@@ -183,13 +183,10 @@ class ViewController: UIViewController, UITableViewDelegate,
                                 section: Int) -> String? {
         
         //display name of bed in footer
-//        if bedsDecoded {
-//            let bedNameString = bedList?.beds.first(where: {$0.bed_id == bedIdArray[section]})?.name ?? "no name"
-//            return "Bed: \(bedNameString)"
-//        } else {
-//            return ""
-//        }
-        return "Bed"
+        let bedNameString = coreBeds.first(where: {$0.bed_id == bedIdArray[section]})?.name ?? "no name"
+            
+        return "Bed: \(bedNameString)"
+        
     }
 
     //configure and return custom cell
@@ -643,7 +640,6 @@ class ViewController: UIViewController, UITableViewDelegate,
         }
     }
     
-    
     func savePlantData(plantToSave: Plant) {
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
             return
@@ -691,7 +687,6 @@ class ViewController: UIViewController, UITableViewDelegate,
             print("Error saving plant \(error)")
         }
     }
-
     
     func fetchBedData() {
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
