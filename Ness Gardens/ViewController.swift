@@ -54,7 +54,6 @@ class ViewController: UIViewController, UITableViewDelegate,
     //Variables to pass along to detail view controller
     var selectedPlant: CorePlant?
     var selectedPlantImage: UIImage?
-    var selectedPlantImageFileName: String?
     var selectedImageFileNameArray: [String] = []
     
     //Core Data
