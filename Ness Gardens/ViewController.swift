@@ -60,6 +60,12 @@ class ViewController: UIViewController, UITableViewDelegate,
     var corePlants: [CorePlant] = [] //Empty array to hold records fetched from CoreData
     var coreBeds: [CoreBed] = []
     var coreImages: [CoreImage] = []
+    
+    // Simple in-memory image cache to reduce flicker and repeated downloads
+    private var imageCache = NSCache<NSString, UIImage>()
+    
+    // Track the URL currently expected for each visible indexPath to avoid setting stale images after reuse
+    private var imageURLForIndexPath: [IndexPath: String] = [:]
 
     //MARK: Map and Location
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
@@ -192,6 +198,8 @@ class ViewController: UIViewController, UITableViewDelegate,
         //cast to cell to custom tableview cell
         let cell = tableView.dequeueReusableCell(withIdentifier: "myCell", for: indexPath) as! NessGardensTableViewCell
         
+        imageURLForIndexPath[indexPath] = nil
+        
         //get bed id with current section as index, get plants in that section, display all plants in that section as rows
         let currentBedId = bedIdArray[indexPath.section]
         
@@ -228,11 +236,34 @@ class ViewController: UIViewController, UITableViewDelegate,
             }
         }
         
-        //set thumbnail image to image loaded from url with the cellplant's image file name found in the decoded image data
+        // Build image URL safely and use cache to avoid flicker
         let imageFileName = coreImages.first(where: { $0.recnum == cellPlant.recnum })?.img_file_name ?? ""
         let urlString = "https://cgi.csc.liv.ac.uk/~phil/Teaching/COMP228/ness_thumbnails/\(imageFileName)"
-        let url = URL(string: urlString)!
-        cell.thumbnailImageView.load(url:url)
+        imageURLForIndexPath[indexPath] = urlString
+        
+        // If cached, use it immediately
+        if let cached = imageCache.object(forKey: urlString as NSString) {
+            cell.thumbnailImageView.image = cached
+        } else if let url = URL(string: urlString), !imageFileName.isEmpty {
+            // Keep placeholder and fetch in background
+            let expectedURLString = urlString
+            URLSession.shared.dataTask(with: url) { [weak self, weak tableView] data, response, error in
+                guard let self = self, let data = data, error == nil, let image = UIImage(data: data) else { return }
+                // Cache the image
+                self.imageCache.setObject(image, forKey: expectedURLString as NSString)
+                DispatchQueue.main.async {
+                    // Ensure the cell for this indexPath is still expecting this URL
+                    guard let tv = tableView,
+                          let currentURL = self.imageURLForIndexPath[indexPath],
+                          currentURL == expectedURLString,
+                          let visibleCell = tv.cellForRow(at: indexPath) as? NessGardensTableViewCell else { return }
+                    visibleCell.thumbnailImageView.image = image
+                }
+            }.resume()
+        } else {
+            // No valid URL; keep placeholder
+            cell.thumbnailImageView.image = UIImage(named: "no plant image")
+        }
         
         return cell
     }
@@ -971,3 +1002,4 @@ class ViewController: UIViewController, UITableViewDelegate,
         
     }
 }
+
